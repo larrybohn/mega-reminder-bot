@@ -4,7 +4,8 @@ const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
     token,
     webhook: {
-        url: 'https://megareminderbot.herokuapp.com' //todo: move to config
+        url: 'https://megareminderbot.herokuapp.com', //todo: move to config
+        port: 8443
     }
 });
 
