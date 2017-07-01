@@ -6,7 +6,7 @@ const bot = new TeleBot({
     webhook: {
         url: 'https://megareminderbot.herokuapp.com' //todo: move to config
     }
-};
+});
 
 bot.on('/start', (msg) => {
     msg.reply.text('Welcome to ReminderBot. Drop me a message, picture or file to get reminder.');
