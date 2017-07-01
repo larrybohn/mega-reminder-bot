@@ -1,0 +1,22 @@
+{
+  "name": "mega-reminder-bot",
+  "version": "1.0.0",
+  "description": "reminder bot for telegram",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/larrybohn/mega-reminder-bot.git"
+  },
+  "author": "Larry Bohn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/larrybohn/mega-reminder-bot/issues"
+  },
+  "homepage": "https://github.com/larrybohn/mega-reminder-bot#readme",
+  "dependencies": {
+    "telebot": "^1.2.2"
+  }
+}
