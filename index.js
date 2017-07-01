@@ -92,7 +92,10 @@ const timeIntervalKeyboard = function (messageId) {
             TIME_INTERVAL.d1,
             TIME_INTERVAL.d2,
             TIME_INTERVAL.w1
-        ].map((t) => timeIntervalInlineButton(t,messageId))
+        ].map((t) => timeIntervalInlineButton(t,messageId)),
+        [
+            bot.inlineButton('Cancel', { callback: 0 + '|' + 0 })
+        ]
     ]);
 }
 const emptyKeyboard = bot.inlineKeyboard([[]]);
@@ -108,18 +111,28 @@ bot.on('callbackQuery', msg => {
     // User message alert
     bot.answerCallbackQuery(msg.id);
     let [timeIntervalSeconds, notificationMessageId] = msg.data.split('|');
-    let timeIntervalObject;
-    for (let t in TIME_INTERVAL) {
-        if (TIME_INTERVAL[t].value == timeIntervalSeconds) {
-            timeIntervalObject = TIME_INTERVAL[t];
-            break;
+    if (timeIntervalSeconds == 0) {
+        bot.editMessageText({
+            chatId: msg.from.id,
+            messageId: msg.message.message_id
+        }, 'Notification cancelled', {replyMarkup: emptyKeyboard}); //todo: delete message completely?
+    }else {
+        let timeIntervalObject;
+        for (let t in TIME_INTERVAL) {
+            if (TIME_INTERVAL[t].value == timeIntervalSeconds) {
+                timeIntervalObject = TIME_INTERVAL[t];
+                break;
+            }
         }
-    }
-    bot.editMessageText({chatId: msg.from.id, messageId: msg.message.message_id} ,`You will be notified in ${timeIntervalObject.label}`, {replyMarkup: emptyKeyboard});
+        bot.editMessageText({
+            chatId: msg.from.id,
+            messageId: msg.message.message_id
+        }, `You will be notified in ${timeIntervalObject.label}`, {replyMarkup: emptyKeyboard});
 
-    setTimeout(function() {
-        bot.forwardMessage(msg.from.id, msg.from.id, notificationMessageId)
-    }, timeIntervalSeconds*1000); //todo: implement snooze / dismiss functionality
+        setTimeout(function () {
+            bot.forwardMessage(msg.from.id, msg.from.id, notificationMessageId)
+        }, timeIntervalSeconds * 1000); //todo: implement snooze / dismiss functionality
+    }
 });
 
 bot.start();
