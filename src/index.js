@@ -2,7 +2,7 @@ import TeleBot from 'telebot';
 import Reminder from './model/reminder';
 import Nano from 'nano';
 const nano = Nano('http://localhost:5984');
-const database = nano.db.use('mega-reminder-bot');
+const database = nano.db.use('reminders');
 
 const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
