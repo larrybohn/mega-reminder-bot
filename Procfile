@@ -1,2 +1,1 @@
-web: node telegram-bot/index.js
-background: node background-service/index.js
+web: node build/index.js

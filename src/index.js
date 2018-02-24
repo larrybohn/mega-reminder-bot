@@ -1,4 +1,8 @@
-const TeleBot = require('telebot');
+import TeleBot from 'telebot';
+import Reminder from './model/reminder';
+import Nano from 'nano';
+const nano = Nano('http://localhost:5984');
+const database = nano.db.use('mega-reminder-bot');
 
 const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
@@ -129,9 +133,12 @@ bot.on('callbackQuery', msg => {
             messageId: msg.message.message_id
         }, `You will be notified in ${timeIntervalObject.label}`, {replyMarkup: emptyKeyboard});
 
-        setTimeout(function () {
-            bot.forwardMessage(msg.from.id, msg.from.id, notificationMessageId)
-        }, timeIntervalSeconds * 1000); //todo: implement snooze / dismiss functionality
+        const reminder = new Reminder(msg.from.id, notificationMessageId, timeIntervalSeconds);
+        database.insert(reminder, function (err, body) {
+            if (err) {
+                console.log(err.toString());
+            }
+        });
     }
 });
 
