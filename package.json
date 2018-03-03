@@ -7,7 +7,8 @@
     "build": "babel src -d build",
     "build-debug": "babel src -d build --source-maps",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run build && node build/index.js"
+    "start-bot": "npm run build && node build/bot/index.js",
+    "start-background-service": "npm run build && node build/background-service/index.js"
   },
   "engines": {
     "node": "9.5.0"

@@ -7,8 +7,19 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceRoot}/src/index.js",
+            "name": "Launch Bot",
+            "program": "${workspaceRoot}/build/bot/index.js",
+            "sourceMaps": true,
+            "preLaunchTask": "build-debug",
+            "outFiles": [
+                "${workspaceRoot}/build/**.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Background Service",
+            "program": "${workspaceRoot}/build/background-service/index.js",
             "sourceMaps": true,
             "preLaunchTask": "build-debug",
             "outFiles": [
