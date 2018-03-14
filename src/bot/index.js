@@ -7,10 +7,10 @@ import ReminderProvider from '../dal/reminder-provider';
 const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
     token,
-    /*webhook: {
+    webhook: {
         url: 'https://megareminderbot.herokuapp.com', //todo: move to config
-        port: process.env.PORT || 8443
-    }*/
+        port: process.env.PORT
+    }
 });
 const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
