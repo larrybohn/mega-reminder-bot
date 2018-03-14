@@ -27,7 +27,7 @@ bot.on('*', (msg, self) => {
         const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
         const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, msg.message_id);
         return bot.sendMessage(
-            msg.from.id,
+            msg.chat.id,
             'When do you want to get a reminder?',
             {replyMarkup: keyboard}
         );
@@ -35,33 +35,54 @@ bot.on('*', (msg, self) => {
 });
 
 //Inline button is pressed
-bot.on('callbackQuery', msg => {
+bot.on('callbackQuery', async msg => {
     // User message alert
     bot.answerCallbackQuery(msg.id);
     let [command, notificationMessageId] = msg.data.split('|');
 
-    if (command === 'cancel') { //todo: move command codes to constants
+    try {
+        if (command === 'cancel') { //todo: move command codes to constants
+            await cancelReminder(msg);
+        }else if (command === 'completed') {
+            await completeReminder(msg);
+        }else if (!isNaN(command)) {
+            const timeInterval = Number(command);
+            await setReminder(msg, notificationMessageId, timeInterval);
+        }
+    }catch(e) {
+        console.log(e);
+    }
+
+});
+
+async function cancelReminder(msg) {
+    return await bot.editMessageText({
+        chatId: msg.message.chat.id,
+        messageId: msg.message.message_id
+    }, 'Reminder cancelled', {replyMarkup: emptyKeyboard});
+}
+
+async function completeReminder(msg) {
+    // await bot.editMessageText({
+    //     chatId: msg.chat.id,
+    //     messageId: msg.message.message_id
+    // }, `Amazing job!`, {replyMarkup: emptyKeyboard});
+    await bot.deleteMessage(msg.message.chat.id, msg.message.message_id);
+}
+
+async function setReminder(msg, notificationMessageId, timeInterval) {
+    const formattedTimeInterval = KeyboardHelper.FormatTimeInterval(timeInterval);
+    const reminder = new Reminder(msg.message.chat.id, msg.from.id, notificationMessageId, timeInterval);
+    try {
+        await reminderProvider.addReminder(reminder)
         bot.editMessageText({
-            chatId: msg.from.id,
-            messageId: msg.message.message_id
-        }, 'Notification cancelled', {replyMarkup: emptyKeyboard});
-    }else if (command === 'completed') {
-        //todo
-    }else if (!isNaN(command)) {
-        const timeInterval = Number(command);
-        const formattedTimeInterval = KeyboardHelper.FormatTimeInterval(timeInterval);
-
-
-        const reminder = new Reminder(msg.from.id, notificationMessageId, timeInterval);
-        reminderProvider.addReminder(reminder).then(() => {
-            bot.editMessageText({
-                chatId: msg.from.id,
+                chatId: msg.message.chat.id,
                 messageId: msg.message.message_id
             }, `You will be notified in ${formattedTimeInterval}`, {replyMarkup: emptyKeyboard});
-        }).catch(() => {
-            bot.sendMessage(msg.from.id, 'Something went wrong, please try again later');
-        })
+    }catch(e) {
+        bot.sendMessage(msg.message.chat.id, 'Something went wrong, please try again later');
+        throw e;
     }
-});
+}
 
 bot.start();

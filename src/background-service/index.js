@@ -13,18 +13,18 @@ const bot = new TeleBot({
 const keyboardHelper = new KeyboardHelper(bot);
 const reminderProvider = new ReminderProvider();
 
-function getKeyboard(userId) {
+function getKeyboard(userId, messageId) {
     const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
-    return keyboardHelper.BuildReminderKeyboard(userKeyboardSettings.buttons, userId);
+    return keyboardHelper.BuildReminderKeyboard(userKeyboardSettings.buttons, messageId);
 }
 
 function pollReminders() {
     return reminderProvider.getPendingReminders(Date.now()).then(reminders => Promise.all(
         reminders.map(async reminder => {
-            const keyboard = getKeyboard(reminder.userId);
+            const keyboard = getKeyboard(reminder.userId, reminder.messageId);
 
             try {
-                await bot.sendMessage(reminder.userId, 'Mark as completed ✓ or Snooze ⏰', {
+                await bot.sendMessage(reminder.chatId, 'Mark as completed ✓ or Snooze ⏰', {
                     replyToMessage: reminder.messageId,
                     replyMarkup: keyboard
                 });
