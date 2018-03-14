@@ -1,10 +1,8 @@
 import TeleBot from 'telebot';
 import Reminder from '../model/reminder';
 import UserKeyboardSettings from '../model/user-keyboard-settings';
-import KeyboardHelper from '../shared//keyboard-helper';
-import Nano from 'nano';
-const nano = Nano('http://localhost:5984');
-const database = nano.db.use('reminders');
+import KeyboardHelper from '../shared/keyboard-helper';
+import ReminderProvider from '../dal/reminder-provider';
 
 const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
@@ -16,6 +14,7 @@ const bot = new TeleBot({
 });
 const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
+const reminderProvider = new ReminderProvider();
 
 //Conversation start
 bot.on('/start', (msg) => {
@@ -25,8 +24,8 @@ bot.on('/start', (msg) => {
 //Reminder is sent
 bot.on('*', (msg, self) => {
     if (self.type !== 'command') {
-        let userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
-        let keyboard = keyboardHelper.BuildReminderKeyboard(userKeyboardSettings.buttons, msg.message_id);
+        const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
+        const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, msg.message_id);
         return bot.sendMessage(
             msg.from.id,
             'When do you want to get a reminder?',
@@ -51,17 +50,17 @@ bot.on('callbackQuery', msg => {
     }else if (!isNaN(command)) {
         const timeInterval = Number(command);
         const formattedTimeInterval = KeyboardHelper.FormatTimeInterval(timeInterval);
-        bot.editMessageText({
-            chatId: msg.from.id,
-            messageId: msg.message.message_id
-        }, `You will be notified in ${formattedTimeInterval}`, {replyMarkup: emptyKeyboard});
+
 
         const reminder = new Reminder(msg.from.id, notificationMessageId, timeInterval);
-        database.insert(reminder, function (err, body) {
-            if (err) {
-                console.log(err.toString());
-            }
-        });
+        reminderProvider.addReminder(reminder).then(() => {
+            bot.editMessageText({
+                chatId: msg.from.id,
+                messageId: msg.message.message_id
+            }, `You will be notified in ${formattedTimeInterval}`, {replyMarkup: emptyKeyboard});
+        }).catch(() => {
+            bot.sendMessage(msg.from.id, 'Something went wrong, please try again later');
+        })
     }
 });
 

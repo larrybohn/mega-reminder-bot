@@ -24,11 +24,13 @@
   },
   "homepage": "https://github.com/larrybohn/mega-reminder-bot#readme",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "nano": "^6.4.2",
     "telebot": "^1.2.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1"
   }
 }

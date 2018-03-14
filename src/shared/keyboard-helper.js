@@ -3,9 +3,17 @@ export default class KeyboardHelper {
         this.bot = telebot;
     }
 
-    BuildReminderKeyboard(buttons, messageId) {
+    BuildSetNotificationKeyboard(buttons, messageId) {
         let keyboard = buildTimeIntervalButtons(this.bot, buttons, messageId);
         keyboard.push([this.bot.inlineButton('Cancel', {callback:`cancel|${messageId}`})]);
+        return this.bot.inlineKeyboard(keyboard);
+    }
+
+    BuildReminderKeyboard(buttons, messageId) {
+        let keyboard = buildTimeIntervalButtons(this.bot, buttons, messageId);
+        keyboard.push([
+            this.bot.inlineButton('Completed ✓', {callback:`completed|${messageId}`}),
+        ]);
         return this.bot.inlineKeyboard(keyboard);
     }
 

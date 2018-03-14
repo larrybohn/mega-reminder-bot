@@ -1,32 +1,49 @@
 import TeleBot from 'telebot';
-import {PollingIntervalMilliseconds} from './constants';
+import { PollingIntervalMilliseconds } from './constants';
 import Nano from 'nano';
+import UserKeyboardSettings from '../model/user-keyboard-settings';
+import KeyboardHelper from '../shared/keyboard-helper';
+import ReminderProvider from '../dal/reminder-provider';
+import Reminder from '../model/reminder';
 
 const token = process.env.BOT_TOKEN;
 const bot = new TeleBot({
     token
 });
-const nano = Nano('http://localhost:5984');
-const database = nano.db.use('reminders');
+const keyboardHelper = new KeyboardHelper(bot);
+const reminderProvider = new ReminderProvider();
 
-setInterval(() => {
+function getKeyboard(userId) {
+    const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
+    return keyboardHelper.BuildReminderKeyboard(userKeyboardSettings.buttons, userId);
+}
 
-    database.view('reminders', 'by-reminder-time', { include_docs: true, endkey: Date.now() }, function(err, body) {
-        if (!err) {
-          body.rows.forEach(doc => {
-           // bot.forwardMessage(doc.doc.chatId, doc.doc.chatId, doc.doc.messageId).then(function(data) {
-              bot.sendMessage(doc.doc.chatId, '------------', {
-                replyToMessage: doc.doc.messageId,
-                replyMarkup: bot.inlineKeyboard([[
-                  bot.inlineButton('Mark Completed', {callback:'completed'}),
-                  bot.inlineButton('Snooze', {callback: 'snooze'})
-                ]])                
-              });
-              database.destroy(doc.doc._id, doc.doc._rev);
-            });
-          //});
-        }
-      });
+function pollReminders() {
+    return reminderProvider.getPendingReminders(Date.now()).then(reminders => Promise.all(
+        reminders.map(async reminder => {
+            const keyboard = getKeyboard(reminder.userId);
 
-    
-}, PollingIntervalMilliseconds/3);
+            try {
+                await bot.sendMessage(reminder.userId, 'Mark as completed ✓ or Snooze ⏰', {
+                    replyToMessage: reminder.messageId,
+                    replyMarkup: keyboard
+                });
+                return reminderProvider.markReminded(reminder._id);
+            }catch(e) {
+                console.log(e);
+            }
+        })
+    ));
+}
+
+async function startPolling() {
+    try {
+        await pollReminders();
+    } catch (e) {
+        console.log(e);
+    } finally {
+        setTimeout(startPolling, PollingIntervalMilliseconds);
+    }
+}
+
+startPolling();
