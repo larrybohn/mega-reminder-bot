@@ -14,7 +14,7 @@ const bot = new TeleBot({
 });
 const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
-const reminderProvider = new ReminderProvider();
+const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 //Conversation start
 bot.on('/start', (msg) => {

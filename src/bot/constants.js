@@ -1,1 +1,0 @@
-export const PollingIntervalMilliseconds = 5000;

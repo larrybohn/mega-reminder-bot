@@ -1,6 +1,5 @@
 import TeleBot from 'telebot';
 import { PollingIntervalMilliseconds } from './constants';
-import Nano from 'nano';
 import UserKeyboardSettings from '../model/user-keyboard-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
@@ -11,7 +10,7 @@ const bot = new TeleBot({
     token
 });
 const keyboardHelper = new KeyboardHelper(bot);
-const reminderProvider = new ReminderProvider();
+const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 function getKeyboard(userId, messageId) {
     const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
