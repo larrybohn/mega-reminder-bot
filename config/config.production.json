@@ -1,0 +1,4 @@
+{
+    "debug": false,
+    "webhookUrl": "https://megareminderbot.herokuapp.com"
+}

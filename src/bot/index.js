@@ -1,3 +1,4 @@
+import config from '../shared/config';
 import TeleBot from 'telebot';
 import Reminder from '../model/reminder';
 import UserKeyboardSettings from '../model/user-keyboard-settings';
@@ -5,13 +6,17 @@ import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
 
 const token = process.env.BOT_TOKEN;
-const bot = new TeleBot({
-    token,
-    webhook: {
-        url: 'https://megareminderbot.herokuapp.com', //todo: move to config
-        port: process.env.PORT
+let telebotOptions = { token };
+if (config.webhookUrl) {
+    telebotOptions = { 
+        webhook: {
+            url: config.webhookUrl,
+            port: process.env.PORT
+        },
+        ...telebotOptions
     }
-});
+}
+const bot = new TeleBot(telebotOptions);
 const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
 const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
@@ -24,7 +29,7 @@ bot.on('/start', (msg) => {
 //Reminder is sent
 bot.on('*', (msg, self) => {
     if (self.type !== 'command') {
-        const userKeyboardSettings = UserKeyboardSettings.GetDefault(); //todo: get from database
+        const userKeyboardSettings = UserKeyboardSettings.GetDefault(msg.from.id, config.debug); //todo: get from database
         const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, msg.message_id);
         return bot.sendMessage(
             msg.chat.id,
@@ -37,7 +42,6 @@ bot.on('*', (msg, self) => {
 //Inline button is pressed
 bot.on('callbackQuery', async msg => {
     // User message alert
-    bot.answerCallbackQuery(msg.id);
     let [command, notificationMessageId] = msg.data.split('|');
 
     try {
@@ -55,25 +59,24 @@ bot.on('callbackQuery', async msg => {
 
 });
 
-async function cancelReminder(msg) {
-    return await bot.editMessageText({
+function cancelReminder(msg) {
+    bot.answerCallbackQuery(msg.id);
+    return bot.editMessageText({
         chatId: msg.message.chat.id,
         messageId: msg.message.message_id
     }, 'Reminder cancelled', {replyMarkup: emptyKeyboard});
 }
 
 async function completeReminder(msg) {
-    // await bot.editMessageText({
-    //     chatId: msg.chat.id,
-    //     messageId: msg.message.message_id
-    // }, `Amazing job!`, {replyMarkup: emptyKeyboard});
     await bot.deleteMessage(msg.message.chat.id, msg.message.message_id);
+    return bot.answerCallbackQuery(msg.id, {text: 'Done!'});
 }
 
 async function setReminder(msg, notificationMessageId, timeInterval) {
     const formattedTimeInterval = KeyboardHelper.FormatTimeInterval(timeInterval);
     const reminder = new Reminder(msg.message.chat.id, msg.from.id, notificationMessageId, timeInterval);
     try {
+        bot.answerCallbackQuery(msg.id);
         await reminderProvider.addReminder(reminder)
         bot.editMessageText({
                 chatId: msg.message.chat.id,
