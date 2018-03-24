@@ -26,6 +26,11 @@ bot.on('/start', (msg) => {
     msg.reply.text('Welcome to ReminderBot. Drop me a message, picture or file to get reminder.');
 });
 
+bot.on('/auth', (msg) => {
+    console.log(msg);
+    //todo: issue POST request to web-ui/authenticate
+});
+
 //Reminder is sent
 bot.on('*', (msg, self) => {
     if (self.type !== 'command') {

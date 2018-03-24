@@ -7,7 +7,7 @@ const environment = process.argv[2] || 'development';
 const configPath = `config/config.${environment}.json`;
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-console.log(config);
+//console.log(config);
 async function compileAsync() {
     let babelCmd = 'babel src -d build';
     if (config.debug) {
