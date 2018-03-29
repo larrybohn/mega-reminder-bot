@@ -1,3 +1,0 @@
-[submodule "model"]
-	path = src/model
-	url = https://github.com/larrybohn/mega-reminder-bot-model.git
