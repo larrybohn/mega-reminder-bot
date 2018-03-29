@@ -25,6 +25,17 @@
             "outFiles": [
                 "${workspaceRoot}/build/**.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Web",
+            "program": "${workspaceRoot}/build/web/index.js",
+            "sourceMaps": true,
+            "preLaunchTask": "build-debug",
+            "outFiles": [
+                "${workspaceRoot}/build/**.js"
+            ]
         }
     ]
 }

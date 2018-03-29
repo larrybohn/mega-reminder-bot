@@ -4,6 +4,7 @@ import Reminder from '../model/reminder';
 import UserKeyboardSettings from '../model/user-keyboard-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
+import AuthTokenProvider from '../dal/auth-token-provider';
 
 const token = process.env.BOT_TOKEN;
 let telebotOptions = { token };
@@ -19,11 +20,28 @@ if (config.webhookUrl) {
 const bot = new TeleBot(telebotOptions);
 const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
-const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
+const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING); //todo: replace with COUCH_URL to unify the two variables?
+const authTokenProvider = new AuthTokenProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
-//Conversation start
-bot.on('/start', (msg) => {
-    msg.reply.text('Welcome to ReminderBot. Drop me a message, picture or file to get reminder.');
+//Conversation start or authentication
+bot.on('/start', async (msg) => {
+    if (msg.text === '/start') {
+        msg.reply.text('Welcome to ReminderBot. Drop me a message, picture or file to get reminder.');
+    }else{
+        const failedMessage = 'Authentication failed. Please try again later.';
+        const token = msg.text.split(' ')[1];
+        const userId = msg.from.id;
+        try {
+            const result = await authTokenProvider.authenticateToken(token, userId);
+            if (result) {
+                msg.reply.text('Authentication successful');
+            }else{
+                msg.reply.text(failedMessage);
+            }
+        }catch(e){
+            msg.reply.text(failedMessage);
+        }
+    }
 });
 
 bot.on('/auth', (msg) => {
