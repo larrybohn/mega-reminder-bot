@@ -12,7 +12,7 @@ router
     //.get('/*', serve(__dirname + '/public', { index: 'index.html' }))
     .use('/api', api.routes(), api.allowedMethods())
     .use('/auth', auth.routes(), auth.allowedMethods())
-    .get('/', async (ctx, next) => {
+    .get('/', async (ctx) => {
         await send(ctx, 'public/index.html', {root: __dirname });
     });    
 

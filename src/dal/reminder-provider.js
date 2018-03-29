@@ -26,6 +26,11 @@ export default class ReminderProvider {
         return body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc));
     }
 
+    async getUserReminders(userId) {
+        const body = await this._database.viewAsync('reminders', 'by-user-id',  { include_docs: true, startkey: userId, endkey: userId });
+        return body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc));
+    }
+
     /*completeReminder() {
         return this._database
     }*/

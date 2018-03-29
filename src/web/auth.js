@@ -6,7 +6,7 @@ const auth = new Router();
 const authTokenProvider = new AuthTokenProvider(); //todo: connection string from config
 
 auth
-    .get('/token', async (ctx, next) => {
+    .get('/token', async (ctx) => {
         ctx.body = await authTokenProvider.createToken();
     });
 
