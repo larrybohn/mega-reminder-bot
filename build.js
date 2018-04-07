@@ -13,14 +13,28 @@ async function compileAsync() {
     if (config.debug) {
         babelCmd += ' --source-maps';
     }
-    await childProcess.execAsync(babelCmd);
+    try {
+        await childProcess.execAsync(babelCmd, (error, stdout, stderr) => {
+            console.log(stdout);
+        });
+    }catch(e) {
+        console.log(e);
+    }
 }
 
 async function webpackAsync() {
     let webpackCmd = `npx webpack --config webpack.${environment}.js`;
-    await childProcess.execAsync(webpackCmd);
+    try {
+        await childProcess.execAsync(webpackCmd, (error, stdout, stderr) => {
+            console.log(stdout);
+        });
+    }catch(e){
+        console.log(e);
+    }
 }
 fs.copyFileSync(configPath, './build/config.json');
 
 compileAsync();
-webpackAsync();
+if (!config.debug) {
+    webpackAsync(); //in debug mode, webpack compilation is performed in the server to support hot reloading
+}
