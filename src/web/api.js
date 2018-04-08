@@ -11,13 +11,16 @@ const api = new Router();
 function checkToken() {
     return async function checkTokenMiddleware(ctx, next) {
         const authHeader = ctx.request.headers.authorization;
-        const authHeaderParts = authHeader.split(' ');
-        if (authHeaderParts.length === 2) {
-            const token = authHeaderParts[1];
-            const userId = await authTokenProvider.getUserIdByToken(token);
-            if (userId !== null) {
-                ctx.userId = userId;
-                await next();
+        if (authHeader) {
+            const authHeaderParts = authHeader.split(' ');
+            if (authHeaderParts.length === 2) {
+                const token = authHeaderParts[1];
+                const user = await authTokenProvider.getUserByToken(token);
+                if (user !== null) {
+                    ctx.userId = user.userId;
+                    ctx.username = user.username;
+                    await next();
+                }
             }
         }
 
@@ -29,6 +32,9 @@ function checkToken() {
 
 api
     .use(checkToken())
+    .get('/username', async (ctx, next) => {
+        ctx.body = ctx.username;
+    })
     .get('/reminders', async (ctx, next) => {
         ctx.body = await reminderProvider.getUserReminders(ctx.userId);
     });

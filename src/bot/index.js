@@ -31,10 +31,11 @@ bot.on('/start', async (msg) => {
         const failedMessage = 'Authentication failed. Please try again later.';
         const token = msg.text.split(' ')[1];
         const userId = msg.from.id;
+        const username = msg.from.username;
         try {
-            const result = await authTokenProvider.authenticateToken(token, userId);
+            const result = await authTokenProvider.authenticateToken(token, userId, username);
             if (result) {
-                msg.reply.text('Authentication successful');
+                msg.reply.text('Authentication successful. You can return to the login page now.');
             }else{
                 msg.reply.text(failedMessage);
             }
