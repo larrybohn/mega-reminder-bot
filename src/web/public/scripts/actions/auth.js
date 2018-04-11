@@ -6,7 +6,7 @@ export const AUTHENTICATION_CHECKED = 'AUTHENTICATION_CHECKED';
 export const AUTHENTICATION_TOKEN_RECEIVED = 'AUTHENTICATION_TOKEN_RECEIVED';
 
 export const checkAuthentication = () => dispatch => {
-    axios.get('/api/username')
+    axios.get('/auth/username')
         .then(body => {
             dispatch({
                 type: AUTHENTICATION_CHECKED,
@@ -42,10 +42,14 @@ export const getAuthenticationToken = () => dispatch => {
 }
 
 export const logout = () => dispatch => {
-    localStorage.removeItem('authtoken');
     dispatch({
         type: LOGOUT
     });
+    axios.post('/auth/logout')
+        .catch(() => {})
+        .then(body => {
+            localStorage.removeItem('authtoken');
+        });
 };
 
 export const login = () => dispatch => {

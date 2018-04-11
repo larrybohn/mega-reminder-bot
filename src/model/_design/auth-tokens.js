@@ -1,5 +1,7 @@
 const map = function (doc) {
-    emit(doc.token, null);
+    if (doc.userId != null) {
+        emit(doc.token, null);
+    }
 };
 
 module.exports = {

@@ -5,7 +5,7 @@ export default class Reminder {
         this.chatId = chatId;
         this.messageId = messageId;
         this.timeIntervalSeconds = timeInterval;        
-        this.createdDate = Date.now(); //todo: decide on the format
+        this.createdDate = Date.now();
         this.lastSnoozeDate = this.createdDate;
         this.isCompleted = false;
     }

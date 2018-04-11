@@ -21,9 +21,6 @@ class App extends Component {
             <BrowserRouter>
                 <div className="container">
                     <Header/>
-                    <nav>
-                        <Link to="/dashboard">link</Link>
-                    </nav>
                     <div>
                         <Route path="/dashboard" component={Dashboard} />
                     </div>

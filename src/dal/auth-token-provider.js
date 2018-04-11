@@ -15,6 +15,13 @@ export default class AuthTokenProvider {
         return token.token;
     }
 
+    async invalidateToken(token) {
+        const body = await this._database.viewAsync('auth-tokens', 'by-token', { include_docs: true, startkey: token, endkey: token });
+        if (body.rows.length === 1) {
+            await this._database.destroyAsync(body.rows[0].id, body.rows[0].doc._rev);
+        }
+    }
+
     async getUserByToken(token) {
         const body = await this._database.viewAsync('auth-tokens', 'by-token', { include_docs: true, startkey: token, endkey: token });
         if (body.rows.length === 1) {

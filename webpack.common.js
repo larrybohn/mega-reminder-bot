@@ -24,6 +24,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+                include : path.join(__dirname, 'src/web/public/images'),
+                use: 'url-loader?limit=30000&name=assets/images/[name].[ext]'
+            },
+            {
                 test: /\.(js|jsx)$/,
                 include: path.resolve(__dirname, 'src/web/public/scripts'),
                 use: {

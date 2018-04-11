@@ -10,6 +10,7 @@ import axios from 'axios';
 const store = configureStore();
 
 import "../styles/index.scss";
+import 'bootstrap';
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('authtoken');
     if (token) {

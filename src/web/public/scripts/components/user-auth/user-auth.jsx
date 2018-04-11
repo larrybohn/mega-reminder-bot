@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AuthTokenChecker from './auth-token-checker.jsx';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 export class UserAuth extends Component {
     constructor(props) {
@@ -25,9 +26,13 @@ export class UserAuth extends Component {
 
     renderUserLink() {
         if (!!this.props.auth.username) {
-            return <span>{this.props.auth.username}<a href="#" onClick={(e) => this.logout(e)}> (Logout)</a></span>;
+            return (
+                <span className="ml-auto">
+                    <strong>{this.props.auth.username}</strong><a href="#" onClick={(e) => this.logout(e)}> (Logout)</a>
+                </span>
+            );
         } else if (!this.props.auth.token) {
-            return <a href="#" onClick={(e) => this.login(e)}>Login</a>
+            return <a className="ml-auto" href="#" onClick={(e) => this.login(e)}>Login</a>
         }
     }
 
@@ -38,9 +43,9 @@ export class UserAuth extends Component {
             const telegramLink = `https://t.me/megareminderdevbot?start=${token}`;
             return (
                 <Modal isOpen={true}>
-                    <ModalHeader>Modal title</ModalHeader>
+                    <ModalHeader>Signing in...</ModalHeader>
                     <ModalBody>
-                        To authenticatte, open <a href={telegramLink} target="_blank">Telegram Link</a> or send
+                        To authenticatte, open <a href={telegramLink} target="_blank">Telegram Link</a> and click Start in the Telegram chat, or send
                         the following message to the bot: <pre>/start {token}</pre>
                     </ModalBody>
                     <ModalFooter>
@@ -54,19 +59,19 @@ export class UserAuth extends Component {
     }
 
     renderNavLinks() {
-        if (this.props.auth.username) {
+        if (!!this.props.auth.username) {
             return (
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Reminders</a>
+                <React.Fragment>
+                    <li className="nav-item active">
+                        <Link className="nav-link" to="/reminders">Reminders</Link>
                     </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Timezone</a>
+                    <li className="nav-item active">
+                        <Link className="nav-link" to="/timezone">Timezone</Link>
                     </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Customize Keyboard</a>
+                    <li className="nav-item active">
+                        <Link className="nav-link" to="/keyboard">Customize Keyboard</Link>
                     </li>
-                </ul>
+                </React.Fragment>
             );
         }
         return null;
@@ -74,11 +79,13 @@ export class UserAuth extends Component {
 
     render() {
         return (
-            <span>
-                {this.renderNavLinks()}
-                <span>{this.renderUserLink()}</span>
-                {this.renderTokenDialog()}
-            </span>
+            <div className="collapse navbar-collapse" id="header-navbar-content">
+                <ul className="navbar-nav">
+                    {this.renderNavLinks()}
+                </ul>
+                {this.renderUserLink()}
+                {this.renderTokenDialog()}            
+            </div>
         );
     }
 }

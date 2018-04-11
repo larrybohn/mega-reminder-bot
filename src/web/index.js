@@ -15,19 +15,28 @@ const app = new Koa();
 const router = new Router();
 
 router
-    .get('/assets/*', async (ctx) => {
-        await send(ctx, ctx.path, { root: __dirname + '/public'});
-    })
     .use('/api', api.routes(), api.allowedMethods())
-    .use('/auth', auth.routes(), auth.allowedMethods())
-    .get('/', async (ctx) => {
-        await send(ctx, 'public/index.html', {root: __dirname });
-    });    
+    .use('/auth', auth.routes(), auth.allowedMethods());
 
-if (config.debug === true) {
+if (!config.debug) {
+    router
+        .get('/assets/*', async (ctx) => {
+            await send(ctx, ctx.path, { root: __dirname + '/public'});
+        })
+        .get('/*', async (ctx) => {
+            await send(ctx, 'public/index.html', {root: __dirname });
+        });
+}else{
     const compiler = webpack(webpackConfig);
+    const koaWebpackDevMiddlewareInstance = koaWebpackDevMiddleware(compiler, {publicPath: '/'});
+    router
+        .get('/*', (ctx, next) => {
+            if (['/dashboard'].indexOf(ctx.request.path) !== -1) {
+                ctx.request.path = '/';
+            }
+            return koaWebpackDevMiddlewareInstance(ctx, next);
+        });
     app
-        .use(koaWebpackDevMiddleware(compiler, {publicPath: '/'}))
         .use(koaWebpackHotMiddleware(compiler, {path: '/__webpack_hmr'}));
 }
 
