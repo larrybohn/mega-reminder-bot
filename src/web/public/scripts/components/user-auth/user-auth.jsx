@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AuthTokenChecker from './auth-token-checker.jsx';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export class UserAuth extends Component {
     constructor(props) {
@@ -18,10 +19,14 @@ export class UserAuth extends Component {
         this.props.authActions.getAuthenticationToken();
     }
 
+    abortLogin() {
+        this.props.authActions.logout();
+    }
+
     renderUserLink() {
         if (!!this.props.auth.username) {
             return <span>{this.props.auth.username}<a href="#" onClick={(e) => this.logout(e)}> (Logout)</a></span>;
-        }else if (!this.props.auth.token) {
+        } else if (!this.props.auth.token) {
             return <a href="#" onClick={(e) => this.login(e)}>Login</a>
         }
     }
@@ -32,21 +37,48 @@ export class UserAuth extends Component {
             //todo: pass Telegram Bot Id from server!
             const telegramLink = `https://t.me/megareminderdevbot?start=${token}`;
             return (
-            <div>
-                To authenticatte, open <a href={telegramLink} target="_blank">Telegram Link</a> or send
-                the following message to the bot: <pre>/start {token}</pre>
-                <AuthTokenChecker checkAuthToken={this.props.authActions.checkAuthentication}/>
-            </div>);
+                <Modal isOpen={true}>
+                    <ModalHeader>Modal title</ModalHeader>
+                    <ModalBody>
+                        To authenticatte, open <a href={telegramLink} target="_blank">Telegram Link</a> or send
+                        the following message to the bot: <pre>/start {token}</pre>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.abortLogin() }}>Cancel</Button>
+                    </ModalFooter>
+                    <AuthTokenChecker checkAuthToken={this.props.authActions.checkAuthentication} />
+                </Modal>
+            );
+        }
+        return null;
+    }
+
+    renderNavLinks() {
+        if (this.props.auth.username) {
+            return (
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Reminders</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Timezone</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Customize Keyboard</a>
+                    </li>
+                </ul>
+            );
         }
         return null;
     }
 
     render() {
         return (
-            <div>
+            <span>
+                {this.renderNavLinks()}
                 <span>{this.renderUserLink()}</span>
                 {this.renderTokenDialog()}
-            </div>
+            </span>
         );
     }
 }
