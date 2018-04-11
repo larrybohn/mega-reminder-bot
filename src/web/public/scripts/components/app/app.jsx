@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { BrowserRouter, Link, Route } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import { Header } from '../header/header.jsx';
+import Timezone from '../timezone/timezone.jsx';
+import Splash from '../splash/splash.jsx';
+import Keyboard from '../keyboard/keyboard.jsx';
+import Reminders from '../reminders/reminders.jsx';
 
 function Dashboard(props) {
     return <div></div>;
@@ -22,7 +26,10 @@ class App extends Component {
                 <div className="container">
                     <Header/>
                     <div>
-                        <Route path="/dashboard" component={Dashboard} />
+                        <Route exact path="/" component={Splash} />
+                        <Route path="/reminders" component={Reminders} />
+                        <Route path="/timezone" component={Timezone} />
+                        <Route path="/keyboard" component={Keyboard} />
                     </div>
                 </div>
             </BrowserRouter>

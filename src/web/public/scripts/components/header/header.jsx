@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import UserAuth from '../../containers/user-auth/user-auth.jsx';
 import logoImage from '../../../images/telegram-icon.png';
 import './header.scss';
@@ -12,10 +13,12 @@ export class Header extends Component {
     render() {
         return (
             <nav className="navbar navbar-expand-md navbar-light bg-light">
-                <div className="navbar-brand">
-                    <img className="bot-logo" src={logoImage}/>
-                    Reminder Bot
-                </div>
+                <Link to="/">
+                    <div className="navbar-brand">
+                        <img className="bot-logo" src={logoImage}/>
+                        Reminder Bot
+                    </div>
+                </Link>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#header-navbar-content">
                     <span className="navbar-toggler-icon"></span>
                 </button>

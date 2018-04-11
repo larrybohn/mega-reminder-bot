@@ -31,7 +31,7 @@ if (!config.debug) {
     const koaWebpackDevMiddlewareInstance = koaWebpackDevMiddleware(compiler, {publicPath: '/'});
     router
         .get('/*', (ctx, next) => {
-            if (['/dashboard'].indexOf(ctx.request.path) !== -1) {
+            if (['/reminders', '/timezone', '/keyboard'].indexOf(ctx.request.path) !== -1) {
                 ctx.request.path = '/';
             }
             return koaWebpackDevMiddlewareInstance(ctx, next);
