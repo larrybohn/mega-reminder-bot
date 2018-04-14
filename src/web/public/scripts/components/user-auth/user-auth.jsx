@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 export class UserAuth extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
         this.state = {};
     }
 

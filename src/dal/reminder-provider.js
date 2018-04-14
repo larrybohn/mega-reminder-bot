@@ -12,7 +12,21 @@ export default class ReminderProvider {
     addReminder(reminder) {
         //let {userId, messageId, ...dbReminder} = reminder;
         //dbReminder._id = [userId, messageId];
-        return this._database.insertAsync(reminder);
+        return this._database.insertAsync(reminder).then(response => response.id);
+    }
+
+    async setReminder(_id, timeInterval) {
+        const dbReminder = await this._database.getAsync(_id);
+        dbReminder.isCompleted = false;
+        if (dbReminder.timeIntervalSeconds === null) {
+            dbReminder.createdDate = Date.now();
+        }else{
+            dbReminder.lastSnoozeDate = Date.now();
+            ++dbReminder.snoozeCount;
+        }
+        dbReminder.timeIntervalSeconds = timeInterval;
+        
+        return this._database.insertAsync(dbReminder);
     }
 
     async markReminded(_id) {

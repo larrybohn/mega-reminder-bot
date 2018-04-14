@@ -1,6 +1,7 @@
 const byReminderTime = function (doc) {
-    if (!doc.isCompleted) {
-        emit(doc.createdDate + 1000*doc.timeIntervalSeconds, null);
+    if (doc.timeIntervalSeconds && !doc.isCompleted) {
+        const baseDate = doc.lastSnoozeDate || doc.createdDate;
+        emit(baseDate + 1000*doc.timeIntervalSeconds, null);
     }
 };
 

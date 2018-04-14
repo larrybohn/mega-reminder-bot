@@ -5,7 +5,7 @@ import { Header } from '../header/header.jsx';
 import Timezone from '../timezone/timezone.jsx';
 import Splash from '../splash/splash.jsx';
 import Keyboard from '../keyboard/keyboard.jsx';
-import Reminders from '../reminders/reminders.jsx';
+import Reminders from '../../containers/reminders/reminders.jsx';
 
 function Dashboard(props) {
     return <div></div>;

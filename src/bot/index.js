@@ -5,6 +5,7 @@ import UserKeyboardSettings from '../model/user-keyboard-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
 import AuthTokenProvider from '../dal/auth-token-provider';
+import { extractMessageSummary } from './telegram-utils';
 
 const token = process.env.BOT_TOKEN;
 let telebotOptions = { token };
@@ -45,16 +46,16 @@ bot.on('/start', async (msg) => {
     }
 });
 
-bot.on('/auth', (msg) => {
-    console.log(msg);
-    //todo: issue POST request to web-ui/authenticate
-});
-
 //Reminder is sent
-bot.on('*', (msg, self) => {
+bot.on('*', async (msg, self) => {
     if (self.type !== 'command') {
         const userKeyboardSettings = UserKeyboardSettings.GetDefault(msg.from.id, config.debug); //todo: get from database
-        const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, msg.message_id);
+        
+        const messageSummary = extractMessageSummary(msg);        
+        const reminder = new Reminder(msg.chat.id, msg.from.id, msg.message_id, null, messageSummary);
+        const reminderId = await reminderProvider.addReminder(reminder);
+
+        const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, reminderId);
         return bot.sendMessage(
             msg.chat.id,
             'When do you want to get a reminder?',
@@ -66,7 +67,7 @@ bot.on('*', (msg, self) => {
 //Inline button is pressed
 bot.on('callbackQuery', async msg => {
     // User message alert
-    let [command, notificationMessageId] = msg.data.split('|');
+    let [command, reminderId] = msg.data.split('|');
 
     try {
         if (command === 'cancel') { //todo: move command codes to constants
@@ -75,7 +76,7 @@ bot.on('callbackQuery', async msg => {
             await completeReminder(msg);
         }else if (!isNaN(command)) {
             const timeInterval = Number(command);
-            await setReminder(msg, notificationMessageId, timeInterval);
+            await setReminder(msg, reminderId, timeInterval);
         }
     }catch(e) {
         console.log(e);
@@ -96,12 +97,11 @@ async function completeReminder(msg) {
     return bot.answerCallbackQuery(msg.id, {text: 'Done!'});
 }
 
-async function setReminder(msg, notificationMessageId, timeInterval) {
+async function setReminder(msg, reminderId, timeInterval) {
     const formattedTimeInterval = KeyboardHelper.FormatTimeInterval(timeInterval);
-    const reminder = new Reminder(msg.message.chat.id, msg.from.id, notificationMessageId, timeInterval);
     try {
         bot.answerCallbackQuery(msg.id);
-        await reminderProvider.addReminder(reminder)
+        await reminderProvider.setReminder(reminderId, timeInterval);
         bot.editMessageText({
                 chatId: msg.message.chat.id,
                 messageId: msg.message.message_id

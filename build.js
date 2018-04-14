@@ -15,7 +15,7 @@ async function compileAsync() {
     }
     try {
         await childProcess.execAsync(babelCmd, (error, stdout, stderr) => {
-            console.log(stdout);
+            console.log(stderr);
         });
     }catch(e) {
         console.log(e);

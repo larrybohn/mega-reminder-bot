@@ -3,16 +3,16 @@ export default class KeyboardHelper {
         this.bot = telebot;
     }
 
-    BuildSetNotificationKeyboard(buttons, messageId) {
-        let keyboard = buildTimeIntervalButtons(this.bot, buttons, messageId);
-        keyboard.push([this.bot.inlineButton('Cancel', {callback:`cancel|${messageId}`})]);
+    BuildSetNotificationKeyboard(buttons, reminderId) {
+        let keyboard = buildTimeIntervalButtons(this.bot, buttons, reminderId);
+        keyboard.push([this.bot.inlineButton('Cancel', {callback:`cancel|${reminderId}`})]);
         return this.bot.inlineKeyboard(keyboard);
     }
 
-    BuildReminderKeyboard(buttons, messageId) {
-        let keyboard = buildTimeIntervalButtons(this.bot, buttons, messageId);
+    BuildReminderKeyboard(buttons, reminderId) {
+        let keyboard = buildTimeIntervalButtons(this.bot, buttons, reminderId);
         keyboard.push([
-            this.bot.inlineButton('Completed ✓', {callback:`completed|${messageId}`}),
+            this.bot.inlineButton('Completed ✓', {callback:`completed|${reminderId}`}),
         ]);
         return this.bot.inlineKeyboard(keyboard);
     }
@@ -26,10 +26,10 @@ export default class KeyboardHelper {
     }
 }
 
-function buildTimeIntervalButtons(bot, buttons, messageId) {
+function buildTimeIntervalButtons(bot, buttons, reminderId) {
     return buttons.map(row => row.map(timeInterval =>
         //todo: remove messageId?
-        bot.inlineButton(formatTimeInterval(timeInterval), { callback: `${timeInterval}|${messageId}`})));    
+        bot.inlineButton(formatTimeInterval(timeInterval), { callback: `${timeInterval}|${reminderId}`})));    
 }
 
 function formatTimeInterval(timeInterval) {
