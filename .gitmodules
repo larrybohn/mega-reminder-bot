@@ -1,0 +1,3 @@
+[submodule "src/telebot"]
+	path = src/telebot
+	url = git@github.com:larrybohn/telebot.git
