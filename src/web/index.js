@@ -24,7 +24,8 @@ async function initKoaApp() {
     if (config.webhookUrl) {
         await startTelegramBotWithWebhook().then(listener => {
             router.post('/telegram/:token', async (ctx) => {
-                console.log(JSON.stringify(ctx.request));
+                ctx.body = '';
+                ctx.status = 200;
                 listener(ctx.req, ctx.res);
             })
         });
