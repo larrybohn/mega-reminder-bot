@@ -42,6 +42,7 @@ bot.on('/start', async (msg) => {
                 msg.reply.text(failedMessage);
             }
         } catch (e) {
+            console.log(e);
             msg.reply.text(failedMessage);
         }
     }
