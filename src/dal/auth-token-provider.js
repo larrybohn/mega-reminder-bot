@@ -24,7 +24,7 @@ export default class AuthTokenProvider {
 
     async getUserByToken(token) {
         const body = await this._database.viewAsync('auth-tokens', 'by-token', { include_docs: true, startkey: token, endkey: token });
-        if (body.rows.length === 1) {
+        if (body.rows.length === 1 && body.rows[0].doc.userId) {
             return {
                 userId: body.rows[0].doc.userId,
                 username: body.rows[0].doc.username
@@ -35,11 +35,7 @@ export default class AuthTokenProvider {
     }
 
     async authenticateToken(token, userId, username) {
-        console.log(token);
-        console.log(userId);
-        console.log(username);
         const body = await this._database.viewAsync('auth-tokens', 'by-token', { include_docs: false, startkey: token, endkey: token });
-        console.log(JSON.stringify(body));
         if (body.rows.length === 1) {
             const authTokenId = body.rows[0].id;
             const dbAuthToken = await this._database.getAsync(authTokenId);
