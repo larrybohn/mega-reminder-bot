@@ -113,7 +113,7 @@ function initializeBot() {
             throw e;
         }
     }
-
+    bot.logging = true;
     return bot.start();
 }
 
