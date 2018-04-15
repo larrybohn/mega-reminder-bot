@@ -4,7 +4,6 @@
   "description": "reminder bot for telegram",
   "main": "index.js",
   "scripts": {
-    "postinstall": "cd couchmigrate && npm install",
     "build": "babel build.js -d build && node build/build.js production",
     "build-debug": "babel build.js -d build && node build/build.js development",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -70,6 +69,8 @@
     "webpack": "^4.3.0",
     "webpack-bundle-analyzer": "^2.11.1",
     "webpack-cli": "^2.0.13",
-    "webpack-merge": "^4.1.2"
+    "webpack-merge": "^4.1.2",
+    "async": "^2.5.0",
+    "yargs": "^8.0.2"
   }
 }
