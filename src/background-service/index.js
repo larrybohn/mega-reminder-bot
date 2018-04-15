@@ -1,5 +1,5 @@
 import config from '../shared/config';
-import TeleBot from 'telebot';
+import TeleBot from '../telebot/lib/telebot';
 import { PollingIntervalMilliseconds } from './constants';
 import UserKeyboardSettings from '../model/user-keyboard-settings';
 import KeyboardHelper from '../shared/keyboard-helper';

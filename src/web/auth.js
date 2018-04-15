@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import Reminder from '../model/Reminder';
+import Reminder from '../model/reminder';
 import AuthTokenProvider from '../dal/auth-token-provider';
 import checkToken from './middleware/check-token';
 
