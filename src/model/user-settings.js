@@ -1,7 +1,8 @@
-export default class UserKeyboardSettings {
-    constructor(userId, buttons) { //todo: snooze capabilities, mark as completed etc.
-        this.userId = userId;
+export default class UserSettings {
+    constructor(userId, buttons, timezone) { //todo: snooze capabilities, mark as completed etc.
+        this._id = userId.toString();
         this.buttons = buttons;
+        this.timezone = timezone;
     }
 
     static GetDefault(userId, includeDebugButtons) {
@@ -13,6 +14,6 @@ export default class UserKeyboardSettings {
         if (includeDebugButtons) {
             keyboardItems.unshift([1, 2, 5, 10]);
         }
-        return new UserKeyboardSettings(userId, keyboardItems);
+        return new UserSettings(userId, keyboardItems);
     }
 }

@@ -65,10 +65,7 @@ export class UserAuth extends Component {
                         <Link className="nav-link" to="/reminders">Reminders</Link>
                     </li>
                     <li className="nav-item active">
-                        <Link className="nav-link" to="/timezone">Timezone</Link>
-                    </li>
-                    <li className="nav-item active">
-                        <Link className="nav-link" to="/keyboard">Customize Keyboard</Link>
+                        <Link className="nav-link" to="/settings">Settings</Link>
                     </li>
                 </React.Fragment>
             );

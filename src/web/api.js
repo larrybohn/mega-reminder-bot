@@ -2,8 +2,12 @@ import Router from 'koa-router';
 import Reminder from '../model/reminder';
 import ReminderProvider from '../dal/reminder-provider';
 import checkToken from './middleware/check-token';
+import UserSettingsProvider from '../dal/user-settings-provider';
+import UserSettings from '../model/user-settings';
+import config from '../shared/config';
 
 const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
+const userSettingsProvider = new UserSettingsProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 const api = new Router();
 
@@ -30,6 +34,14 @@ api
         await reminderProvider.deleteReminder(ctx.params.reminderId);
         ctx.status = 200;
         ctx.body = '';
+    })
+    .get('/user-settings', async (ctx, next) => {
+        let userSettings = await userSettingsProvider.getUserSettings(ctx.userId);
+        if (!userSettings) {
+            userSettings = UserSettings.GetDefault(ctx.userId, config.debug);
+            await userSettingsProvider.setUserSettings(userSettings);
+        }
+        ctx.body = userSettings;
     });
 
 export default api;

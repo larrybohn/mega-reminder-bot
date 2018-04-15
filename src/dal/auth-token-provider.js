@@ -1,12 +1,9 @@
-import Nano from 'nano';
-import bluebird from 'bluebird';
+import BaseProvider from './base-provider';
 import AuthToken from '../model/auth-token';
 
-export default class AuthTokenProvider {
-    constructor(connectionString = 'http://localhost:5984') {
-        const nano = Nano(connectionString);
-        this._database = nano.db.use('auth-tokens');
-        bluebird.promisifyAll(this._database);
+export default class AuthTokenProvider extends BaseProvider {
+    constructor(connectionString) {
+        super(connectionString, 'auth-tokens');
     }
 
     async createToken() {

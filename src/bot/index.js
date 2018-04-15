@@ -1,7 +1,7 @@
 import config from '../shared/config';
 import TeleBot from '../telebot/lib/telebot';
 import Reminder from '../model/reminder';
-import UserKeyboardSettings from '../model/user-keyboard-settings';
+import UserSettings from '../model/user-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
 import AuthTokenProvider from '../dal/auth-token-provider';
@@ -51,13 +51,13 @@ bot.on('/start', async (msg) => {
 //Reminder is sent
 bot.on('*', async (msg, self) => {
     if (self.type !== 'command') {
-        const userKeyboardSettings = UserKeyboardSettings.GetDefault(msg.from.id, config.debug); //todo: get from database
+        const userSettings = UserSettings.GetDefault(msg.from.id, config.debug); //todo: get from database
 
         const messageSummary = extractMessageSummary(msg);
         const reminder = new Reminder(msg.chat.id, msg.from.id, msg.message_id, null, messageSummary);
         const reminderId = await reminderProvider.addReminder(reminder);
 
-        const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userKeyboardSettings.buttons, reminderId);
+        const keyboard = keyboardHelper.BuildSetNotificationKeyboard(userSettings.buttons, reminderId);
         return bot.sendMessage(
             msg.chat.id,
             'When do you want to get a reminder?',

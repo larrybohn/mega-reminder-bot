@@ -28,7 +28,7 @@ export default function remindersState(state = initialState, action) {
         }
         case reminderActions.REMINDER_DELETED: {
             const nextState = { ...state };
-            nextState.reminders = state.reminders.filter(reminder => reminder._id != action.payload.reminderId);
+            nextState.reminders = state.reminders.slice(0).filter(reminder => reminder._id != action.payload.reminderId);
             return nextState;
         }
         default:

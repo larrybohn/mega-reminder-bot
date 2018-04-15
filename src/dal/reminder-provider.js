@@ -1,13 +1,10 @@
-import Nano from 'nano';
-import bluebird from 'bluebird';
+import BaseProvider from './base-provider';
 import Reminder from '../model/reminder';
 
-export default class ReminderProvider {
-    constructor(connectionString = 'http://localhost:5984') {
-        const nano = Nano(connectionString);
-        this._database = nano.db.use('reminders');
-        bluebird.promisifyAll(this._database);
-    }    
+export default class ReminderProvider extends BaseProvider {
+    constructor(connectionString) {
+        super(connectionString, 'reminders');
+    } 
 
     addReminder(reminder) {
         //let {userId, messageId, ...dbReminder} = reminder;
