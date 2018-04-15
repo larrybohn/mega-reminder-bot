@@ -14,7 +14,7 @@ function initializeBot() {
         telebotOptions = {
             ...telebotOptions,
             webhook: {
-                url: config.webhookUrl,
+                url: config.webhookUrl + '/telegram',
                 port: process.env.PORT || 3200,
                 createServer: false
             }
