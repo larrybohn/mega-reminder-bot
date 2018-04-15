@@ -36,6 +36,8 @@ async function initKoaApp() {
                 ctx.body = JSON.stringify(e);
             }
         });
+    }else{
+        bot.start();
     }
 
     if (!config.debug) {

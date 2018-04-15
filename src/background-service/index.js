@@ -30,7 +30,11 @@ function pollReminders() {
                 });
                 return reminderProvider.markReminded(reminder._id);
             }catch(e) {
-                console.log(e);
+                if (e.error_code === 403) { //user has stopped and blocked bot
+                    reminderProvider.markReminded(reminder._id);
+                }else{
+                    console.log(e);
+                }
             }
         })
     ));

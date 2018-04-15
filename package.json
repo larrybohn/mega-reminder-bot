@@ -7,7 +7,6 @@
     "build": "babel build.js -d build && node build/build.js production",
     "build-debug": "babel build.js -d build && node build/build.js development",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug-bot": "npm run build-debug && node build/bot/index.js",
     "debug-bgservice": "npm run build-debug && node build/background-service/index.js",
     "debug-web": "npm run build-debug && node build/web/index.js",
     "deploy-database": "babel deploy-database.js -d build && node build/deploy-database.js",
