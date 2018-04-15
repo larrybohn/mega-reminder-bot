@@ -1,3 +1,6 @@
 [submodule "src/telebot"]
 	path = src/telebot
 	url = git@github.com:larrybohn/telebot.git
+[submodule "couchmigrate"]
+	path = couchmigrate
+	url = git@github.com:larrybohn/couchmigrate.git
