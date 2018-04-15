@@ -4,7 +4,7 @@ import AuthTokenProvider from '../dal/auth-token-provider';
 import checkToken from './middleware/check-token';
 
 const auth = new Router();
-const authTokenProvider = new AuthTokenProvider(); //todo: connection string from config
+const authTokenProvider = new AuthTokenProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 auth
     .use(['/username', '/logout'], checkToken())

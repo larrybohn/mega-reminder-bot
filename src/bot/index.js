@@ -23,7 +23,7 @@ function initializeBot() {
     const bot = new TeleBot(telebotOptions);
     const keyboardHelper = new KeyboardHelper(bot);
     const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
-    const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING); //todo: replace with COUCH_URL to unify the two variables?
+    const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
     const authTokenProvider = new AuthTokenProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
     //Conversation start or authentication

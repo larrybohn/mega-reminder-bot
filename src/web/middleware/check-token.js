@@ -1,5 +1,5 @@
 import AuthTokenProvider from '../../dal/auth-token-provider';
-const authTokenProvider = new AuthTokenProvider();
+const authTokenProvider = new AuthTokenProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 export default function checkToken() {
     return async function checkTokenMiddleware(ctx, next) {

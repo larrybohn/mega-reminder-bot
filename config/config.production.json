@@ -1,4 +1,5 @@
 {
     "debug": false,
-    "webhookUrl": "https://megareminderbot.herokuapp.com"
+    "webhookUrl": "https://megareminderbot.herokuapp.com",
+    "telegramBotId": "MegaReminderBot"
 }

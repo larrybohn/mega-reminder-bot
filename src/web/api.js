@@ -3,7 +3,7 @@ import Reminder from '../model/reminder';
 import ReminderProvider from '../dal/reminder-provider';
 import checkToken from './middleware/check-token';
 
-const reminderProvider = new ReminderProvider();
+const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 const api = new Router();
 
