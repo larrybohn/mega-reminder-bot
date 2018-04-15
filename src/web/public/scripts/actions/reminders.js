@@ -4,6 +4,8 @@ export const REMINDERS_LOADED = 'REMINDERS_LOADED';
 export const REMINDERS_LOADING_ERROR = 'REMINDERS_LOADING_ERROR';
 export const REMINDERS_LOADING = 'REMINDERS_LOADING';
 export const REMINDER_DELETING = 'REMINDER_DELETING';
+export const REMINDER_DELETED = 'REMINDER_DELETED';
+export const REMINDER_DELETING_ERROR = 'REMINDER_DELETING_ERROR';
 
 export const loadReminders = () => dispatch => {
     dispatch({
@@ -35,4 +37,21 @@ export const deleteReminder = (reminderId) => dispatch => {
             reminderId
         }
     });
+    axios.delete(`/api/reminders/${reminderId}`)
+        .then(body => {
+            dispatch({
+                type: REMINDER_DELETED,
+                payload: {
+                    reminderId
+                }
+            })
+        })
+        .catch(error => {
+            dispatch({
+                type: REMINDER_DELETING_ERROR,
+                payload: {
+                    error
+                }
+            });
+        });
 };

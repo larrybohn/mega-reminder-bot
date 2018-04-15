@@ -13,24 +13,31 @@ export class Reminders extends Component {
         this.props.reminderActions.deleteReminder(reminderId);
     }
 
-    renderUpcoming() {
-        return this.props.reminders.map(reminder => {
-            if (!reminder.isCompleted) {
-                return <ReminderCard {...reminder} key={reminder._id} delete={() => this.deleteReminder(reminder._id)}/>
-            }else{
-                return null;
+    renderReminderSection(title, predicate) {
+        const reminders = this.props.reminders.reduce((renderedReminders, reminder) => {
+            if (predicate(reminder)) {
+                renderedReminders.push(<ReminderCard {...reminder} key={reminder._id} delete={() => this.deleteReminder(reminder._id)}/>);
             }
-        });
+            return renderedReminders;
+        }, []);
+        if (reminders.length) {
+            return reminders;
+        }else{
+            return <p>No {title} reminders</p>
+        }
+    }
+
+    renderUpcoming() {
+        return this.renderReminderSection('upcoming', reminder => !reminder.isCompleted);
     }
 
     renderCompleted() {
-        return this.props.reminders.map(reminder => {
-            if (reminder.isCompleted) {
-                return <ReminderCard {...reminder} key={reminder._id} delete={() => this.deleteReminder(reminder._id)} />
-            }else{
-                return null;
-            }
-        });
+        return this.renderReminderSection('completed', reminder => reminder.isCompleted);
+    }
+
+    onReloadClick(e) {
+        this.props.reminderActions.loadReminders();
+        e.preventDefault();
     }
 
     render() {
@@ -39,6 +46,7 @@ export class Reminders extends Component {
         } else if (!!this.props.reminders) {
             return (
                 <div>
+                    <a href="#" onClick={(e) => this.onReloadClick(e)}>Reload</a>
                     <h2>Upcoming reminders</h2>
                     <div>
                         {this.renderUpcoming()}

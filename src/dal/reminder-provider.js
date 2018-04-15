@@ -45,7 +45,8 @@ export default class ReminderProvider {
         return body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc));
     }
 
-    /*completeReminder() {
-        return this._database
-    }*/
+    async deleteReminder(reminderId) {
+        const body = await this._database.getAsync(reminderId);
+        return this._database.destroyAsync(body._id, body._rev);
+    }
 }

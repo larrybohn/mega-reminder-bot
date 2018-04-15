@@ -1,0 +1,6 @@
+.reminder-card {
+    position: relative;
+    &.reminder-card-busy {
+        background: #333;
+    }
+}
