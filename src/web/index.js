@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import Router from 'koa-router';
 import send from 'koa-send';
+import bodyParser from 'koa-bodyparser';
 
 import api from './api';
 import auth from './auth';
@@ -11,23 +12,29 @@ import webpackConfig from '../../webpack.development';
 import koaWebpackDevMiddleware from 'koa-webpack-dev-middleware';
 import koaWebpackHotMiddleware from 'koa-webpack-hot-middleware';
 
-import startTelegramBotWithWebhook from '../bot/index.js';
+import bot from '../bot/index.js';
 
 async function initKoaApp() {
     const app = new Koa();
     const router = new Router();
+
+    app.use(bodyParser());
 
     router
         .use('/api', api.routes(), api.allowedMethods())
         .use('/auth', auth.routes(), auth.allowedMethods());
 
     if (config.webhookUrl) {
-        await startTelegramBotWithWebhook().then(listener => {
-            router.post('/telegram/:token', async (ctx) => {
+        await bot.start();
+        router.post('/telegram/:token', async (ctx) => {                
+            try {
+                await bot.receiveUpdates([ctx.request.body]);
                 ctx.body = '';
-                ctx.status = 200;
-                listener(ctx.req, ctx.res);
-            })
+                ctx.status = 200;   
+            }catch (e) {
+                ctx.status = 500;
+                ctx.body = JSON.stringify(e);
+            }
         });
     }
 
