@@ -58,6 +58,15 @@ export class Keyboard extends Component {
         });
     }
 
+    addRow() {
+        let newButtons = JSON.parse(JSON.stringify(this.state.buttons));
+        newButtons.push([0]);
+        this.setState({
+            ...this.state,
+            buttons: newButtons
+        });
+    }
+
     reset() {
         this.setState({
             buttons: JSON.parse(JSON.stringify(this.props.buttons))
@@ -83,6 +92,7 @@ export class Keyboard extends Component {
         return (
             <div className="keyboard">
                 {rows}
+                <button type="button" class="btn btn-link" onClick={() => this.addRow()}>+Row</button>
                 <div>
                     <button type="button" class="btn btn-primary" onClick={() => this.props.save(this.state.buttons)}>
                         Save
