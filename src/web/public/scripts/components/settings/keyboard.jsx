@@ -58,6 +58,12 @@ export class Keyboard extends Component {
         });
     }
 
+    reset() {
+        this.setState({
+            buttons: JSON.parse(JSON.stringify(this.props.buttons))
+        });
+    }    
+
     render() {
         const rows = this.state.buttons.map((row, rowIndex) => 
             <KeyboardRow
@@ -74,7 +80,19 @@ export class Keyboard extends Component {
                 }
             </KeyboardRow>
         );
-        return <div className="keyboard">{rows}</div>
+        return (
+            <div className="keyboard">
+                {rows}
+                <div>
+                    <button type="button" class="btn btn-primary" onClick={() => this.props.save(this.state.buttons)}>
+                        Save
+                    </button>
+                    <button type="button" class="btn btn-secondary" onClick={() => this.reset()}>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        );
     }
 }
 

@@ -4,10 +4,7 @@ import { connect } from 'react-redux';
 import Settings from '../../components/settings/settings.jsx';
 import * as settingsActions from '../../actions/settings';
 
-const mapStateToProps = state => ({
-    buttons: state.settings.buttons,
-    timezone: state.settings.timezone
-});
+const mapStateToProps = state => ({...state.settings});
 
 const mapDispatchToProps = dispatch => ({
     settingsActions: bindActionCreators(settingsActions, dispatch)

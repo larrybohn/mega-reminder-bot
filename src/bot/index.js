@@ -5,6 +5,7 @@ import UserSettings from '../model/user-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
 import AuthTokenProvider from '../dal/auth-token-provider';
+import UserSettingsProvider from '../dal/user-settings-provider';
 import { extractMessageSummary } from './telegram-utils';
 
 const token = process.env.BOT_TOKEN;
@@ -24,6 +25,7 @@ const keyboardHelper = new KeyboardHelper(bot);
 const emptyKeyboard = keyboardHelper.GetEmptyKeyboard();
 const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
 const authTokenProvider = new AuthTokenProvider(process.env.COUCH_DB_CONNECTION_STRING);
+const userSettingsProvider = new UserSettingsProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 //Conversation start or authentication
 bot.on('/start', async (msg) => {
@@ -51,7 +53,7 @@ bot.on('/start', async (msg) => {
 //Reminder is sent
 bot.on('*', async (msg, self) => {
     if (self.type !== 'command') {
-        const userSettings = UserSettings.GetDefault(msg.from.id, config.debug); //todo: get from database
+        const userSettings = await userSettingsProvider.getUserSettings(msg.from.id);
 
         const messageSummary = extractMessageSummary(msg);
         const reminder = new Reminder(msg.chat.id, msg.from.id, msg.message_id, null, messageSummary);
@@ -115,7 +117,4 @@ async function setReminder(msg, reminderId, timeInterval) {
 }
 bot.logging = true;
 
-if (!config.webhookUrl) {
-    bot.start();
-}
 export default bot;

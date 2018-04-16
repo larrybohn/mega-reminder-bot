@@ -42,6 +42,12 @@ api
             await userSettingsProvider.setUserSettings(userSettings);
         }
         ctx.body = userSettings;
-    });
+    })
+    .post('/user-settings', async (ctx, next) => {
+        const userSettings = new UserSettings(ctx.userId, ctx.request.body.buttons, ctx.request.body.timezone);
+        await userSettingsProvider.setUserSettings(userSettings);
+        ctx.status = 200;
+        ctx.body = '';
+    })
 
 export default api;

@@ -10,10 +10,19 @@ export default function settingsState(state = initialState, action) {
         case settingsActions.SETTINGS_LOADING: {
             return {...state, buttons: JSON.parse(JSON.stringify(state.buttons)), isLoading: true};
         }
+        case settingsActions.SETTINGS_SAVING: {
+            return {...state, ...JSON.parse(JSON.stringify(action.payload)), isLoading: true};
+        }
         case settingsActions.SETTINGS_LOADED: {
             return {
                 ...state,
-                buttons: action.payload.settings.buttons,
+                ...JSON.parse(JSON.stringify(action.payload.settings)),
+                isLoading: false
+            };
+        }
+        case settingsActions.SETTINGS_SAVING_ERROR: {
+            return {
+                ...state,
                 isLoading: false
             };
         }
