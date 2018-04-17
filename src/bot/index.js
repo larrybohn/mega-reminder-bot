@@ -50,6 +50,10 @@ bot.on('/start', async (msg) => {
     }
 });
 
+bot.on('/manage', (msg) => {
+    msg.reply.text(config.manageBotUrl);
+})
+
 //Reminder is sent
 bot.on('*', async (msg, self) => {
     if (self.type !== 'command') {
@@ -66,7 +70,7 @@ bot.on('*', async (msg, self) => {
         return bot.sendMessage(
             msg.chat.id,
             'When do you want to get a reminder?',
-            { replyMarkup: keyboard }
+            { replyMarkup: keyboard, replyToMessage: msg.message_id }
         );
     }
 });
@@ -75,10 +79,9 @@ bot.on('*', async (msg, self) => {
 bot.on('callbackQuery', async msg => {
     // User message alert
     let [command, reminderId] = msg.data.split('|');
-
     try {
         if (command === 'cancel') { //todo: move command codes to constants
-            await cancelReminder(msg);
+            await cancelReminder(msg, reminderId);
         } else if (command === 'completed') {
             await completeReminder(msg);
         } else if (!isNaN(command)) {
@@ -91,7 +94,8 @@ bot.on('callbackQuery', async msg => {
 
 });
 
-function cancelReminder(msg) {
+async function cancelReminder(msg, reminderId) {
+    await reminderProvider.deleteReminder(reminderId);
     bot.answerCallbackQuery(msg.id);
     return bot.editMessageText({
         chatId: msg.message.chat.id,

@@ -6,9 +6,9 @@ export class Reminders extends Component {
         super();
     }
     componentWillMount() {
-        if (this.props.reminders === null) {
-            this.props.reminderActions.loadReminders();
-        }
+        //if (this.props.reminders === null) {
+        this.props.reminderActions.loadReminders();
+        //}
     }
 
     deleteReminder(reminderId) {

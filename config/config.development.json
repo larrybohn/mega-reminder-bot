@@ -1,5 +1,6 @@
 {
     "debug": true,
     "telegramBotId": "MegaReminderDevBot",
+    "manageBotUrl": "http://localhost:3200",
     "backgroundServicePollingIntervalSeconds": 5
 }
