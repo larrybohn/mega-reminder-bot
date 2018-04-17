@@ -14,7 +14,7 @@ const keyboardHelper = new KeyboardHelper(bot);
 const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
 const userSettingsProvider = new UserSettingsProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
-function getKeyboard(userId, reminderId) {
+async function getKeyboard(userId, reminderId) {
     let userSettings = await userSettingsProvider.getUserSettings(userId);
     if (!userSettings) {
         userSettings = UserSettings.GetDefault(userId, config.debug);
@@ -25,7 +25,7 @@ function getKeyboard(userId, reminderId) {
 function pollReminders() {
     return reminderProvider.getPendingReminders(Date.now()).then(reminders => Promise.all(
         reminders.map(async reminder => {
-            const keyboard = getKeyboard(reminder.userId, reminder._id);
+            const keyboard = await getKeyboard(reminder.userId, reminder._id);
 
             try {
                 await bot.sendMessage(reminder.chatId, 'Mark as completed ✓ or Snooze ⏰', {
