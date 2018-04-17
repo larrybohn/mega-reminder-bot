@@ -39,7 +39,7 @@ export class UserAuth extends Component {
         const token = this.props.auth.token;
         if (!this.props.auth.username && !!token) {
             //todo: pass Telegram Bot Id from server!
-            const telegramLink = `https://t.me/megareminderdevbot?start=${token}`;
+            const telegramLink = `https://t.me/${this.props.definitions.telegramBotId}?start=${token}`;
             return (
                 <Modal isOpen={true}>
                     <ModalHeader>Signing in...</ModalHeader>

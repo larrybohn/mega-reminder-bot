@@ -11,7 +11,8 @@ class UserAuthContainer extends Component {
 }
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
+    definitions: state.definitions.definitions
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -6,8 +6,10 @@ import { configureStore } from './store';
 import App from './containers/app/app.jsx';
 
 import axios from 'axios';
+import * as definitionsActions from './actions/definitions';
 
 const store = configureStore();
+definitionsActions.loadDefinitions()(store.dispatch);
 
 import "../styles/index.scss";
 import 'bootstrap';

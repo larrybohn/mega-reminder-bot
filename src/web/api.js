@@ -12,6 +12,11 @@ const userSettingsProvider = new UserSettingsProvider(process.env.COUCH_DB_CONNE
 const api = new Router();
 
 api
+    .get('/definitions', async (ctx) => {
+        ctx.body = {
+            telegramBotId: config.telegramBotId
+        };
+    })
     .use(checkToken())
     .get('/reminders', async (ctx, next) => {
         const reminders = await reminderProvider.getUserReminders(ctx.userId);
