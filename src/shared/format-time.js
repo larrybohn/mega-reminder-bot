@@ -1,6 +1,10 @@
-export function formatTimeInterval(timeInterval) {
-    return breakIntoUnits(timeInterval)
-        .map(u => formatTimeUnit(u.value, u.unit))
+import moment from 'moment';
+
+export function formatTimeInterval(timeInterval, shorten=false) {
+    const units = breakIntoUnits(timeInterval);
+    shorten = shorten && units.length>1;
+    return units
+        .map(u => formatTimeUnit(u.value, u.unit, shorten))
         .join(' ')
         .trim();
 }
@@ -17,6 +21,14 @@ export function breakIntoUnits(timeInterval) {
         { value: minutes, unit: 'minute' },
         { value: seconds, unit: 'second' }
     ].filter(t => t.value !== 0);
+}
+
+export function convertToLowestUnit(timeInterval) {
+    const units = breakIntoUnits(timeInterval);
+    return {
+        unit: units[units.length-1].unit,
+        value: moment.duration(timeInterval, 'seconds').as(units[units.length-1].unit)
+    }
 }
 
 export function valueWithUnitToSeconds(value, unit) {
@@ -37,12 +49,12 @@ export function valueWithUnitToSeconds(value, unit) {
     return value*multiplier;
 }
 
-function formatTimeUnit(value, unit) {
+function formatTimeUnit(value, unit, shorten=false) {
     if (value === 0) {
         return ''
     }else if (value === 1) {
-        return `${value} ${unit}`
+        return `${value}${shorten ? unit[0] : ' '+unit}`
     }else{
-        return `${value} ${unit}s`
+        return `${value}${shorten ? unit[0] : ' '+unit+'s'}`
     }
 }

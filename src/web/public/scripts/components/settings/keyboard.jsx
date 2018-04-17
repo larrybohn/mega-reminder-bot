@@ -7,9 +7,16 @@ import {v4 as uuidv4} from 'uuid';
 function mapButtonsToRows(buttonArray) {
     return buttonArray.map(row => ({
         id: uuidv4(),
-        items: row.slice(0)
+        items: row.map(item => ({id: uuidv4(), time: item, isEditing: false}))
     }));
 }
+
+const createButton = () => ({
+    id:uuidv4(),
+    time: 0,
+    isEditing:true,
+    editingTime: 60
+});
 
 export class Keyboard extends Component {
     constructor(props) {
@@ -50,7 +57,8 @@ export class Keyboard extends Component {
 
     updateButton(rowIndex, colIndex, newValue) {
         let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons[rowIndex].items[colIndex] = newValue;
+        newButtons[rowIndex].items[colIndex].time = newValue;
+        newButtons[rowIndex].items[colIndex].isEditing = false;
         this.setState({
             ...this.state,
             buttonRows: newButtons
@@ -59,7 +67,7 @@ export class Keyboard extends Component {
 
     addButton(rowIndex) {
         let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons[rowIndex].items.push(0);
+        newButtons[rowIndex].items.push(createButton());
         this.setState({
             ...this.state,
             buttonRows: newButtons
@@ -68,7 +76,7 @@ export class Keyboard extends Component {
 
     addRow() {
         let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons.push({id: uuidv4(), items:[0]});
+        newButtons.push({id: uuidv4(), items:[createButton()]});
         this.setState({
             ...this.state,
             buttonRows: newButtons
@@ -82,7 +90,43 @@ export class Keyboard extends Component {
     }
 
     onSaveClick() {
-        this.props.save(this.state.buttonRows.map(row => row.items));
+        let nextButtons = this.state.buttonRows.map(row => ({
+            ...row,
+            items: row.items.map(item =>{
+                let nextItem = {...item};
+                if (item.isEditing) {
+                    nextItem.time = item.editingTime;
+                    nextItem.isEditing = false;
+                }
+                return nextItem;
+            })
+        }));
+        this.setState({
+            ...this.state,
+            buttonRows: nextButtons
+        }, () => this.props.save(nextButtons.map(row => row.items.map(item => item.time))));
+    }
+
+    onButtonEditModeToggle(isEditing, rowIndex, colIndex) {
+        if (!isEditing && this.state.buttonRows[rowIndex].items[colIndex].time === 0) { //cancellng newly added item
+            this.deleteButton(rowIndex, colIndex);
+        }else{
+            let nextButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+            nextButtons[rowIndex].items[colIndex].isEditing = isEditing;
+            if (isEditing) {
+                nextButtons[rowIndex].items[colIndex].editingTime = nextButtons[rowIndex].items[colIndex].time;
+            }
+            this.setState({
+                ...this.state,
+                buttonRows: nextButtons
+            });
+        }
+    }
+
+    onTimeChange(newValue, rowIndex, colIndex) {
+        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+        newButtons[rowIndex].items[colIndex].editingTime = newValue;
+        this.setState({...this.state, buttonRows: newButtons});
     }
 
     render() {
@@ -92,12 +136,16 @@ export class Keyboard extends Component {
                 delete={this.state.buttonRows.length > 1 ? this.deleteRow.bind(this, rowIndex): null}
                 add={this.addButton.bind(this, rowIndex)}>
                 {
-                    rowObject.items.map((item, index) =>
+                    rowObject.items.map((itemObject, index) =>
                         <KeyboardButton
-                            key={index}
-                            time={item}
-                            delete={this.deleteButton.bind(this, rowIndex, index)}
-                            update={this.updateButton.bind(this, rowIndex, index)} />)
+                            key={itemObject.id}
+                            time={itemObject.time}
+                            isEditing={itemObject.isEditing}
+                            editingTime={itemObject.editingTime}
+                            onTimeChange={(newValue) => this.onTimeChange(newValue, rowIndex, index)}
+                            onEditModeToggle={(isEditing) => this.onButtonEditModeToggle(isEditing,rowIndex,index)}
+                            delete={() => this.deleteButton(rowIndex, index)}
+                            update={(newValue) => this.updateButton(rowIndex, index, newValue)} />)
                 }
             </KeyboardRow>
         );

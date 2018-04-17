@@ -24,12 +24,11 @@ export default class KeyboardHelper {
     }
 
     static FormatTimeInterval(timeInterval) {
-        return formatTimeInterval(timeInterval);
+        return formatTimeInterval(timeInterval, true);
     }
 }
 
 function buildTimeIntervalButtons(bot, buttons, reminderId) {
     return buttons.map(row => row.map(timeInterval =>
-        //todo: remove messageId?
-        bot.inlineButton(formatTimeInterval(timeInterval), { callback: `${timeInterval}|${reminderId}`})));    
+        bot.inlineButton(formatTimeInterval(timeInterval, true), { callback: `${timeInterval}|${reminderId}`})));    
 }
