@@ -19,6 +19,24 @@ export function breakIntoUnits(timeInterval) {
     ].filter(t => t.value !== 0);
 }
 
+export function valueWithUnitToSeconds(value, unit) {
+    let multiplier;
+    switch (unit) {
+        case 'minute':
+            multiplier = 60;
+            break;
+        case 'hour':
+            multiplier = 3600;
+            break;
+        case 'day':
+            multiplier = 24*3600;
+            break;
+        default:
+            multiplier = 1;
+    }
+    return value*multiplier;
+}
+
 function formatTimeUnit(value, unit) {
     if (value === 0) {
         return ''

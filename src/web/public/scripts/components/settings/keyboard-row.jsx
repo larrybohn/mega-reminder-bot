@@ -20,7 +20,10 @@ export class KeyboardRow extends Component {
         return (
             <div className="keyboard-row row">
                 {this.props.children}
-                <a className="keyboard-row-delete-link" href="#" onClick={(e) => this.onDeleteClick(e)}>Del</a>
+                {
+                    (typeof this.props.delete === 'function') &&
+                    <a className="keyboard-row-delete-link" href="#" onClick={(e) => this.onDeleteClick(e)}>Del</a>
+                }
                 <a className="keyboard-row-add-link" href="#" onClick={(e) => this.onAddClick(e)}>Add</a>
             </div>
         );

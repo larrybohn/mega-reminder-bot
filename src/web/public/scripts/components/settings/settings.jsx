@@ -22,7 +22,6 @@ export class Settings extends Component {
     render() {
         return (
             <div className="settings-container">
-            {JSON.stringify(this.props.isLoading)}
                 <BusyOverlay isBusy={this.props.isLoading}/>
                 <h2>Specify Timezone</h2>
                 <p>
