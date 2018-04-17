@@ -1,5 +1,6 @@
 {
     "debug": false,
     "webhookUrl": "https://megareminderbot.herokuapp.com",
-    "telegramBotId": "MegaReminderBot"
+    "telegramBotId": "MegaReminderBot",
+    "backgroundServicePollingIntervalSeconds": 5
 }

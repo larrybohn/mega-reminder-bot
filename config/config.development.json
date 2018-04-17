@@ -1,4 +1,5 @@
 {
     "debug": true,
-    "telegramBotId": "MegaReminderDevBot"
+    "telegramBotId": "MegaReminderDevBot",
+    "backgroundServicePollingIntervalSeconds": 5
 }

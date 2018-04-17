@@ -1,9 +1,9 @@
 import config from '../shared/config';
 import TeleBot from '../telebot/lib/telebot';
-import { PollingIntervalMilliseconds } from './constants';
 import UserSettings from '../model/user-settings';
 import KeyboardHelper from '../shared/keyboard-helper';
 import ReminderProvider from '../dal/reminder-provider';
+import UserSettingsProvider from '../dal/user-settings-provider';
 import Reminder from '../model/reminder';
 
 const token = process.env.BOT_TOKEN;
@@ -12,9 +12,13 @@ const bot = new TeleBot({
 });
 const keyboardHelper = new KeyboardHelper(bot);
 const reminderProvider = new ReminderProvider(process.env.COUCH_DB_CONNECTION_STRING);
+const userSettingsProvider = new UserSettingsProvider(process.env.COUCH_DB_CONNECTION_STRING);
 
 function getKeyboard(userId, reminderId) {
-    const userSettings = UserSettings.GetDefault(userId, config.debug); //todo: get from database
+    let userSettings = await userSettingsProvider.getUserSettings(userId);
+    if (!userSettings) {
+        userSettings = UserSettings.GetDefault(userId, config.debug);
+    }
     return keyboardHelper.BuildReminderKeyboard(userSettings.buttons, reminderId);
 }
 
@@ -46,7 +50,7 @@ async function startPolling() {
     } catch (e) {
         console.log(e);
     } finally {
-        setTimeout(startPolling, PollingIntervalMilliseconds);
+        setTimeout(startPolling, 1000*config.backgroundServicePollingIntervalSeconds);
     }
 }
 

@@ -53,7 +53,10 @@ bot.on('/start', async (msg) => {
 //Reminder is sent
 bot.on('*', async (msg, self) => {
     if (self.type !== 'command') {
-        const userSettings = await userSettingsProvider.getUserSettings(msg.from.id);
+        let userSettings = await userSettingsProvider.getUserSettings(msg.from.id);
+        if (!userSettings) {
+            userSettings = UserSettings.GetDefault(msg.from.id, config.debug);
+        }
 
         const messageSummary = extractMessageSummary(msg);
         const reminder = new Reminder(msg.chat.id, msg.from.id, msg.message_id, null, messageSummary);
