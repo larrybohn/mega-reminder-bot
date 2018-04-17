@@ -9,7 +9,9 @@ export class Settings extends Component {
     }
 
     componentWillMount() {
-        this.props.settingsActions.loadSettings();
+        if (!this.props.buttons || !this.props.buttons.length) {
+            this.props.settingsActions.loadSettings();
+        }
     }
 
     save(keyboardData) {

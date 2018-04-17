@@ -1,24 +1,33 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Link, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import { Header } from '../header/header.jsx';
 import Splash from '../splash/splash.jsx';
 import Reminders from '../../containers/reminders/reminders.jsx';
 import Settings from '../../containers/settings/settings.jsx';
 
-function Dashboard(props) {
-    return <div></div>;
-}
+const PrivateRoute = ({ component: Component, username, ...rest }) => (
+    <Route
+      {...rest}
+      render={props =>
+        username === null ? (
+            <Redirect
+              to={{
+                pathname: "/"
+              }}
+            />
+        ) : (
+            <Component {...props} />
+        )
+      }
+    />
+  );
 
 class App extends Component {
     constructor() {
         super();
     }
 
-    componentDidMount() {
-        this.props.authActions.checkAuthentication();
-    }
-    
     render() {
         return (
             <BrowserRouter>
@@ -26,8 +35,8 @@ class App extends Component {
                     <Header/>
                     <div>
                         <Route exact path="/" component={Splash} />
-                        <Route path="/reminders" component={Reminders} />
-                        <Route path="/settings" component={Settings} />
+                        <PrivateRoute username={this.props.auth.username} path="/reminders" component={Reminders} />
+                        <PrivateRoute username={this.props.auth.username} path="/settings" component={Settings} />
                     </div>
                 </div>
             </BrowserRouter>

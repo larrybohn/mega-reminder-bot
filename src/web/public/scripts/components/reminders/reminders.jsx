@@ -6,7 +6,9 @@ export class Reminders extends Component {
         super();
     }
     componentWillMount() {
-        this.props.reminderActions.loadReminders();
+        if (this.props.reminders === null) {
+            this.props.reminderActions.loadReminders();
+        }
     }
 
     deleteReminder(reminderId) {
@@ -35,10 +37,10 @@ export class Reminders extends Component {
         return this.renderReminderSection('completed', reminder => reminder.isCompleted);
     }
 
-    onReloadClick(e) {
+    /*onReloadClick(e) {
         this.props.reminderActions.loadReminders();
         e.preventDefault();
-    }
+    }*/
 
     render() {
         if (this.props.isLoading) {
@@ -46,7 +48,7 @@ export class Reminders extends Component {
         } else if (!!this.props.reminders) {
             return (
                 <div>
-                    <a href="#" onClick={(e) => this.onReloadClick(e)}>Reload</a>
+                    {/*<a href="#" onClick={(e) => this.onReloadClick(e)}>Reload</a>*/}
                     <h2>Upcoming reminders</h2>
                     <div>
                         {this.renderUpcoming()}

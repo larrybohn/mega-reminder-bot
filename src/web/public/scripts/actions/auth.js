@@ -6,7 +6,7 @@ export const AUTHENTICATION_CHECKED = 'AUTHENTICATION_CHECKED';
 export const AUTHENTICATION_TOKEN_RECEIVED = 'AUTHENTICATION_TOKEN_RECEIVED';
 
 export const checkAuthentication = () => dispatch => {
-    axios.get('/auth/username')
+    return axios.get('/auth/username')
         .then(body => {
             dispatch({
                 type: AUTHENTICATION_CHECKED,

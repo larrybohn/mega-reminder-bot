@@ -44,10 +44,10 @@ export class ReminderCard extends Component {
                 <BusyOverlay isBusy={this.props.isBusy}/>
                 <div className="card-body">
                     <h5 className="card-title">{this.props.summary}</h5>
-                    <p className="card-text">
+                    <div className="card-text">
                         {this.renderReminderTimeInfo()}
                         Set on <strong>{this.createdDate}</strong>.
-                    </p>
+                    </div>
                     {this.renderSnoozeInfo()}
                     <a onClick={(e) => this.onDelete(e)} href="#">Delete</a>
                 </div>

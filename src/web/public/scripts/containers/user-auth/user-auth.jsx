@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import UserAuth from '../../components/user-auth/user-auth.jsx';
 import * as authActions from '../../actions/auth';
+import { withRouter } from 'react-router';
 
 class UserAuthContainer extends Component {
     render() {
@@ -19,4 +20,4 @@ const mapDispatchToProps = dispatch => ({
     authActions: bindActionCreators(authActions, dispatch)
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserAuthContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(UserAuthContainer));

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import AuthTokenChecker from './auth-token-checker.jsx';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import './user-auth.scss';
 
 export class UserAuth extends Component {
     constructor(props) {
@@ -61,11 +62,11 @@ export class UserAuth extends Component {
         if (!!this.props.auth.username) {
             return (
                 <React.Fragment>
-                    <li className="nav-item active">
-                        <Link className="nav-link" to="/reminders">Reminders</Link>
+                    <li className="nav-item">
+                        <NavLink activeClassName="active" className="nav-link" to="/reminders">Reminders</NavLink>
                     </li>
-                    <li className="nav-item active">
-                        <Link className="nav-link" to="/settings">Settings</Link>
+                    <li className="nav-item">
+                        <NavLink activeClassName="active" className="nav-link" to="/settings">Settings</NavLink>
                     </li>
                 </React.Fragment>
             );
@@ -76,7 +77,7 @@ export class UserAuth extends Component {
     render() {
         return (
             <div className="collapse navbar-collapse" id="header-navbar-content">
-                <ul className="navbar-nav">
+                <ul className="nav nav-pills">
                     {this.renderNavLinks()}
                 </ul>
                 {this.renderUserLink()}
