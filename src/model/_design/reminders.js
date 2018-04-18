@@ -5,8 +5,16 @@ const byReminderTime = function (doc) {
     }
 };
 
-const byUserId = function (doc) {
-    emit(doc.userId, null);
+const upcomingByUserId = function (doc) {
+    if (!doc.isCompleted) {
+        emit([doc.userId, (doc.lastSnoozeDate || doc.createdDate)+1000*doc.timeIntervalSeconds], null);
+    }
+}
+
+const completedByUserId = function (doc) {
+    if (doc.isCompleted) {
+        emit([doc.userId, (doc.lastSnoozeDate || doc.createdDate)+1000*doc.timeIntervalSeconds], null);
+    }
 }
 
 module.exports = {
@@ -15,8 +23,11 @@ module.exports = {
         "by-reminder-time": {
             map: byReminderTime.toString()
         },
-        "by-user-id": {
-            map: byUserId.toString()
+        "upcoming-by-user-id": {
+            map: upcomingByUserId.toString()
+        },
+        "completed-by-user-id": {
+            map: completedByUserId.toString()
         }
     }
  };

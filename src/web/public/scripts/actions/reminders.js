@@ -7,16 +7,19 @@ export const REMINDER_DELETING = 'REMINDER_DELETING';
 export const REMINDER_DELETED = 'REMINDER_DELETED';
 export const REMINDER_DELETING_ERROR = 'REMINDER_DELETING_ERROR';
 
-export const loadReminders = () => dispatch => {
+export const loadReminders = (type, page=1) => dispatch => {
     dispatch({
-        type: REMINDERS_LOADING
+        type: REMINDERS_LOADING,
+        payload: {type}
     });
-    axios.get('/api/reminders')
+    axios.get(`/api/reminders/${type}`, {params: { page }})
         .then(body => {
             dispatch({
                 type: REMINDERS_LOADED,
                 payload: {
-                    reminders: body.data
+                    type,
+                    ...body.data,
+                    currentPage: page
                 }
             });
         })
@@ -24,13 +27,19 @@ export const loadReminders = () => dispatch => {
             dispatch({
                 type: REMINDERS_LOADING_ERROR,
                 payload: {
+                    type,
                     error
                 }
             });
         });        
 };
 
-export const deleteReminder = (reminderId) => dispatch => {
+export const loadAllReminders= () => dispatch => {
+    loadReminders('completed')(dispatch);
+    loadReminders('upcoming')(dispatch);
+};
+
+export const deleteReminder = (reminderId, type) => dispatch => {
     dispatch({
         type: REMINDER_DELETING,
         payload: {
@@ -39,12 +48,7 @@ export const deleteReminder = (reminderId) => dispatch => {
     });
     axios.delete(`/api/reminders/${reminderId}`)
         .then(body => {
-            dispatch({
-                type: REMINDER_DELETED,
-                payload: {
-                    reminderId
-                }
-            })
+            loadReminders(type)(dispatch);
         })
         .catch(error => {
             dispatch({

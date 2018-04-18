@@ -1,6 +1,8 @@
 import BaseProvider from './base-provider';
 import Reminder from '../model/reminder';
 
+export const PageSize = 5;
+
 export default class ReminderProvider extends BaseProvider {
     constructor(connectionString) {
         super(connectionString, 'reminders');
@@ -37,9 +39,18 @@ export default class ReminderProvider extends BaseProvider {
         return body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc));
     }
 
-    async getUserReminders(userId) {
-        const body = await this._database.viewAsync('reminders', 'by-user-id',  { include_docs: true, startkey: userId, endkey: userId });
-        return body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc));
+    async getUserReminders(userId, type, page) {
+        let params = {
+            include_docs: true,
+            limit: PageSize,
+            skip: (page-1)*PageSize
+        };
+        params = type==='completed' ? {...params, descending: true, endkey: [userId]} : {...params, startkey: [userId]};
+        const body = await this._database.viewAsync('reminders', `${type}-by-user-id`, params);
+        return {
+            reminders: body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc)),
+            totalPages: Math.ceil(body.total_rows/PageSize)
+        };
     }
 
     async deleteReminder(reminderId) {

@@ -46,7 +46,8 @@ export class UserAuth extends Component {
                     <ModalHeader>Signing in...</ModalHeader>
                     <ModalBody>
                         To authenticate, open <a href={telegramLink} target="_blank">Telegram Link</a> and click Start in the Telegram chat, or send
-                        the following message to the bot: <pre>/start {token}</pre>
+                        the following message to the bot:<br/>
+                        <code>/start {token}</code>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => { this.abortLogin() }}>Cancel</Button>

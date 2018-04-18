@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import ReminderCard from './reminder-card.jsx';
+import Pager from './pager.jsx';
+import './reminders.scss';
+import { BusyOverlay } from '../shared/busy-overlay.jsx';
 
 export class Reminders extends Component {
     constructor() {
@@ -7,40 +10,49 @@ export class Reminders extends Component {
     }
     componentWillMount() {
         //if (this.props.reminders === null) {
-        this.props.reminderActions.loadReminders();
+        this.props.reminderActions.loadAllReminders();
         //}
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.location.key && this.props.location.key !== nextProps.location.key) {
-            this.props.reminderActions.loadReminders();
+            this.props.reminderActions.loadAllReminders();
         }
     }
 
-    deleteReminder(reminderId) {
-        this.props.reminderActions.deleteReminder(reminderId);
+    deleteReminder(reminderId, type) {
+        this.props.reminderActions.deleteReminder(reminderId, type);
     }
 
-    renderReminderSection(title, predicate) {
-        const reminders = this.props.reminders.reduce((renderedReminders, reminder) => {
-            if (predicate(reminder)) {
-                renderedReminders.push(<ReminderCard {...reminder} key={reminder._id} delete={() => this.deleteReminder(reminder._id)}/>);
-            }
-            return renderedReminders;
-        }, []);
-        if (reminders.length) {
-            return reminders;
+    onPageClick(type, page) {
+        this.props.reminderActions.loadReminders(type, page);
+    }
+
+    renderReminderSection(type) {
+        let renderedSection;
+        const reminderProp = this.props[type];
+        if (reminderProp && reminderProp.reminders && reminderProp.reminders.length) {
+            renderedSection = (
+                <div className="reminder-section-container">
+                    <BusyOverlay isBusy={reminderProp.isLoading}/>
+                    {reminderProp.reminders.map(reminder =>
+                        <ReminderCard {...reminder} key={reminder._id} delete={() => this.deleteReminder(reminder._id, type)}/>)}
+                    <Pager
+                        totalPages={reminderProp.totalPages}
+                        currentPage={reminderProp.currentPage}
+                        onPageClick={(page) => this.onPageClick(type, page)} />
+                </div>
+            );
         }else{
-            return <p>No {title} reminders</p>
+            renderedSection = <div><p>No {type} reminders</p></div>
         }
-    }
 
-    renderUpcoming() {
-        return this.renderReminderSection('upcoming', reminder => !reminder.isCompleted);
-    }
-
-    renderCompleted() {
-        return this.renderReminderSection('completed', reminder => reminder.isCompleted);
+        return (
+            <div>
+                <h2>{type[0].toUpperCase() + type.slice(1)} reminders</h2>
+                {renderedSection}
+            </div>
+        );
     }
 
     /*onReloadClick(e) {
@@ -51,24 +63,13 @@ export class Reminders extends Component {
     render() {
         if (this.props.isLoading) {
             return (<div>Loading...</div>);
-        } else if (!!this.props.reminders) {
-            return (
-                <div>
-                    {/*<a href="#" onClick={(e) => this.onReloadClick(e)}>Reload</a>*/}
-                    <h2>Upcoming reminders</h2>
-                    <div>
-                        {this.renderUpcoming()}
-                    </div>
-
-                    <h2>Completed reminders</h2>
-                    <div>
-                        {this.renderCompleted()}
-                    </div>
-                </div>
-            );
-        } else {
-            return null;
         }
+        return (
+            <div>
+                {this.renderReminderSection('upcoming')}
+                {this.renderReminderSection('completed')}
+            </div>
+        );
     }
 }
 

@@ -19,22 +19,11 @@ api
         };
     })
     .use(checkToken())
-    .get('/reminders', async (ctx, next) => {
-        const reminders = await reminderProvider.getUserReminders(ctx.userId);
-        const sortedReminders = reminders.sort((a, b) => {
-            if (a.isCompleted !== b.isCompleted) {
-                return Number(a.isCompleted) - Number(b.isCompleted);
-            }else{
-                const aDate = (a.lastSnoozeDate || a.createdDate) + 1000*a.timeIntervalSeconds;
-                const bDate = (b.lastSnoozeDate || b.createdDate) + 1000*b.timeIntervalSeconds;
-                if (a.isCompleted) {
-                    return bDate - aDate;
-                }else{
-                    return aDate - bDate;
-                }
-            }
-        });
-        ctx.body = sortedReminders;
+    .get('/reminders/:type', async (ctx, next) => {
+        const page = ctx.query.page || 1;
+        const type = ctx.params.type === 'completed' ? 'completed' : 'upcoming';
+        const pagedReminders = await reminderProvider.getUserReminders(ctx.userId, type, page);
+        ctx.body = pagedReminders;
     })
     .delete('/reminders/:reminderId', async (ctx, next) => {
         await reminderProvider.deleteReminder(ctx.params.reminderId);
