@@ -22,7 +22,7 @@ export const checkAuthentication = () => dispatch => {
                     username: null
                 }
             });
-        });        
+        });
 };
 
 export const getAuthenticationToken = () => dispatch => {
@@ -41,15 +41,15 @@ export const getAuthenticationToken = () => dispatch => {
         });
 }
 
-export const logout = () => dispatch => {
+export const logout = (sendLogoutRequest = true) => dispatch => {
     dispatch({
         type: LOGOUT
     });
-    axios.post('/auth/logout')
-        .catch(() => {})
-        .then(body => {
-            localStorage.removeItem('authtoken');
-        });
+    localStorage.removeItem('authtoken');
+    if (sendLogoutRequest) {
+        axios.post('/auth/logout')
+            .catch(() => { });
+    }
 };
 
 export const login = () => dispatch => {
