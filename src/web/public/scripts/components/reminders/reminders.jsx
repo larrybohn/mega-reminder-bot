@@ -11,6 +11,12 @@ export class Reminders extends Component {
         //}
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.location.key && this.props.location.key !== nextProps.location.key) {
+            this.props.reminderActions.loadReminders();
+        }
+    }
+
     deleteReminder(reminderId) {
         this.props.reminderActions.deleteReminder(reminderId);
     }
