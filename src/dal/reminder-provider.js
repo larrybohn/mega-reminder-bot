@@ -40,13 +40,14 @@ export default class ReminderProvider extends BaseProvider {
     }
 
     async getUserReminders(userId, type, page) {
-        let params = {
+        const body = await this._database.viewAsync('reminders', `${type}-by-user-id`, {
             include_docs: true,
             limit: PageSize,
+            startkey: [userId],
+            endkey: [userId, {}],
+            descending: type==='completed',
             skip: (page-1)*PageSize
-        };
-        params = type==='completed' ? {...params, descending: true, endkey: [userId]} : {...params, startkey: [userId]};
-        const body = await this._database.viewAsync('reminders', `${type}-by-user-id`, params);
+        });
         return {
             reminders: body.rows.map(dbReminder => Object.assign(new Reminder, dbReminder.doc)),
             totalPages: Math.ceil(body.total_rows/PageSize)
