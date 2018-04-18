@@ -14,7 +14,8 @@ const api = new Router();
 api
     .get('/definitions', async (ctx) => {
         ctx.body = {
-            telegramBotId: config.telegramBotId
+            telegramBotId: config.telegramBotId,
+            isDebugModeEnabled: config.debug
         };
     })
     .use(checkToken())

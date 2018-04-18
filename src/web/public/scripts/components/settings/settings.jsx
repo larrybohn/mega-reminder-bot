@@ -25,13 +25,8 @@ export class Settings extends Component {
         return (
             <div className="settings-container">
                 <BusyOverlay isBusy={this.props.isLoading}/>
-                <h2>Specify Timezone</h2>
-                <p>
-                    ...Coming soon...
-                </p>
-
                 <h2>Customize Inline Keyboard</h2>
-                <Keyboard buttons={this.props.buttons} save={(data) => this.save(data)} />
+                <Keyboard allowDebugUnits={this.props.definitions.isDebugModeEnabled} buttons={this.props.buttons} save={(data) => this.save(data)} />
             </div>
         );
     }

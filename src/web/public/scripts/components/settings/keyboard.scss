@@ -1,3 +1,70 @@
-.keyboard {
-    max-width: 640px;
+.keyboard.container {
+    max-width: 760px;
+    margin-left: 0;
+    .keyboard-row {
+        &.row {
+            flex-wrap: nowrap;
+        }
+        .keyboard-row-action-column {
+            padding-top: 10px;
+            padding-right: 0;
+            width: 25px;
+            max-width: 25px;
+        }
+        .keyboard-button {
+            border: 1px solid #ccc;
+            //box-shadow: 3px 3px #777;
+            //border-radius: 2px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            //text-overflow: ellipsis;
+            //overflow: hidden;
+        
+            .keyboard-button-action {
+                display: inline-block;
+                &.keyboard-button-action-edit {
+                    margin-right: 20px;
+                }
+            }
+
+            .keyboard-button-editor-container {
+                max-width: 240px;
+                input, select {
+                    height: 28px;
+                    vertical-align: bottom;
+                }
+                input {
+                    width: 30%;
+                }
+                select {
+                    width: 70%;
+                }
+            }
+
+            .keyboard-button-edit-action-container {
+                padding-top: 10px;
+                .btn {
+                    margin-right: 5px;
+                    padding-top: 3px;
+                    padding-bottom: 3px;                    
+                }
+            }
+        }
+    }
+
+    .row {
+        .add-row-container {
+            padding: 15px 0;
+            .btn {
+                padding-left: 0;
+            }
+        }
+        .actions-container {
+            padding: 0;
+            .btn {
+                min-width: 96px;
+                margin-right: 5px;
+            }
+        }
+    }    
 }

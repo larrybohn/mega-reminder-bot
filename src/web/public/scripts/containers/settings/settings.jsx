@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import Settings from '../../components/settings/settings.jsx';
 import * as settingsActions from '../../actions/settings';
 
-const mapStateToProps = state => ({...state.settings});
+const mapStateToProps = state => ({
+    ...state.settings,
+    definitions: state.definitions.definitions
+});
 
 const mapDispatchToProps = dispatch => ({
     settingsActions: bindActionCreators(settingsActions, dispatch)

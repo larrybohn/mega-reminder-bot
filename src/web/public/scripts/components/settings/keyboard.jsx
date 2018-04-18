@@ -3,6 +3,7 @@ import KeyboardButton from './keyboard-button.jsx';
 import KeyboardRow from './keyboard-row.jsx';
 import './keyboard.scss';
 import {v4 as uuidv4} from 'uuid';
+import Octicon from 'react-octicon';
 
 function mapButtonsToRows(buttonArray) {
     return buttonArray.map(row => ({
@@ -138,6 +139,7 @@ export class Keyboard extends Component {
                 {
                     rowObject.items.map((itemObject, index) =>
                         <KeyboardButton
+                            allowDebugUnits={this.props.allowDebugUnits}
                             key={itemObject.id}
                             time={itemObject.time}
                             isEditing={itemObject.isEditing}
@@ -150,16 +152,22 @@ export class Keyboard extends Component {
             </KeyboardRow>
         );
         return (
-            <div className="keyboard">
+            <div className="keyboard container">
                 {rows}
-                <button type="button" className="btn btn-link" onClick={() => this.addRow()}>+Row</button>
-                <div>
-                    <button type="button" className="btn btn-primary" onClick={() => this.onSaveClick()}>
-                        Save
-                    </button>
-                    <button type="button" className="btn btn-secondary" onClick={() => this.reset()}>
-                        Reset
-                    </button>
+                <div className="row">
+                    <div className="col add-row-container">
+                        <button type="button" className="btn btn-link" onClick={() => this.addRow()}><Octicon name="plus" />Row</button>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col actions-container">
+                        <button type="button" className="btn btn-primary btn-save-keyboard" onClick={() => this.onSaveClick()}>
+                            Save
+                        </button>
+                        <button type="button" className="btn btn-secondary btn-reset-keyboard" onClick={() => this.reset()}>
+                            Reset
+                        </button>
+                    </div>
                 </div>
             </div>
         );

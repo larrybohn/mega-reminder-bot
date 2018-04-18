@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import * as TimeUtilities from '../../../../../shared/format-time';
-
-import './keyboard-button.scss';
+import Octicon from 'react-octicon';
 
 export class KeyboardButton extends Component {
     constructor(props) {
@@ -39,22 +38,24 @@ export class KeyboardButton extends Component {
     renderEditMode() {
         return (
             <div className="keyboard-button col">
-            {/*JSON.stringify(this.state)*/}
-                <input
-                    type="text"
-                    value={TimeUtilities.convertToLowestUnit(this.props.editingTime).value}
-                    onChange={(e) => this.onTimeChange(e)} />
-                <select
-                    value={TimeUtilities.convertToLowestUnit(this.props.editingTime).unit}
-                    onChange={(e) => this.onUnitChange(e)} >
-                    <option value="second">Seconds</option> {/* todo: pass config from server, allow Seconds only in development */}
-                    <option value="minute">Minutes</option>
-                    <option value="hour">Hours</option>
-                    <option value="day">Days</option>
-                </select>
-                <br/>
-                <a href="#" onClick={(e) => this.onSaveClick(e, false)}>Save</a>
-                <a href="#" onClick={(e) => this.onEditModeToggle(e, false)}>Cancel</a>
+                <div className="keyboard-button-editor-container">
+                    <input
+                        type="text"
+                        value={TimeUtilities.convertToLowestUnit(this.props.editingTime).value}
+                        onChange={(e) => this.onTimeChange(e)} />
+                    <select
+                        value={TimeUtilities.convertToLowestUnit(this.props.editingTime).unit}
+                        onChange={(e) => this.onUnitChange(e)} >
+                        {this.props.allowDebugUnits &&<option value="second">Seconds</option>}
+                        <option value="minute">Minutes</option>
+                        <option value="hour">Hours</option>
+                        <option value="day">Days</option>
+                    </select>
+                </div>
+                <div className="keyboard-button-edit-action-container">
+                    <button type="button" className="btn btn-primary btn-save-button" onClick={(e) => this.onSaveClick(e, false)}>Save</button>
+                    <button type="button" className="btn btn-secondary btn-cancel-button" onClick={(e) => this.onEditModeToggle(e, false)}>Cancel</button>
+                </div>
             </div>
         );
     }
@@ -62,10 +63,15 @@ export class KeyboardButton extends Component {
     renderReadMode() {
         return (
             <div className="keyboard-button col">
-            {/*JSON.stringify(this.props)*/}
-                {TimeUtilities.formatTimeInterval(this.props.time)}<br/>                
-                <a href="#" onClick={(e) => this.onEditModeToggle(e, true)}>Edit</a>
-                <a href="#" onClick={(e) => this.onDeleteClick(e)}>Del</a>
+                {TimeUtilities.formatTimeInterval(this.props.time)}
+                <div className="">
+                    <a className="keyboard-button-action keyboard-button-action-edit" href="#" onClick={(e) => this.onEditModeToggle(e, true)}>
+                        <Octicon name="pencil" />
+                    </a>
+                    <a className="keyboard-button-action keyboard-button-action-delete" href="#" onClick={(e) => this.onDeleteClick(e)}>
+                        <Octicon name="trashcan" />
+                    </a>
+                </div>
             </div>
         );
     }

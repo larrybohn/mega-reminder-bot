@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './keyboard-row.scss';
+import Octicon from 'react-octicon';
 
 export class KeyboardRow extends Component {
     constructor(props) {
@@ -18,13 +18,19 @@ export class KeyboardRow extends Component {
 
     render() {
         return (
-            <div className="keyboard-row row">
+            <div className="row keyboard-row">
                 {this.props.children}
-                {
-                    (typeof this.props.delete === 'function') &&
-                    <a className="keyboard-row-delete-link" href="#" onClick={(e) => this.onDeleteClick(e)}>Del</a>
-                }
-                <a className="keyboard-row-add-link" href="#" onClick={(e) => this.onAddClick(e)}>Add</a>
+                <div className="col keyboard-row-action-column">
+                    {
+                        (typeof this.props.delete === 'function') &&
+                        <a className="keyboard-row-delete-link" href="#" onClick={(e) => this.onDeleteClick(e)}>
+                            <Octicon name="trashcan" />
+                        </a>
+                    }
+                    <a className="keyboard-row-add-link" href="#" onClick={(e) => this.onAddClick(e)}>
+                        <Octicon name="plus" />
+                    </a>
+                </div>
             </div>
         );
     }
