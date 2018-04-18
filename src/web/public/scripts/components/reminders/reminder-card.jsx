@@ -30,7 +30,7 @@ export class ReminderCard extends Component {
         if (this.lastSnoozeDate) {
             return (
                 <p>
-                    Snoozed {this.props.snoozeCount} times, last time on <strong>{this.lastSnoozeDate}</strong>.
+                    Snoozed {this.props.snoozeCount} {this.props.snoozeCount === 1 ? 'time' : 'times'}, last time on <strong>{this.lastSnoozeDate}</strong>.
                 </p>
             );
         }else{

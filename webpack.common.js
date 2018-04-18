@@ -44,7 +44,7 @@ module.exports = {
             },
             {
                 test: /\.(eot|otf|svg|ttf|woff|woff2)$/,
-                use: 'file-loader'
+                use: 'file-loader?outputPath=assets/fonts/'
             },
             {
                 test: /\.scss$/,
