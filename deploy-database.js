@@ -25,17 +25,17 @@ bluebird.all(['auth-tokens', 'reminders', 'user-settings'].map(dbName => {
         console.log(`creating database ${dbName}`)
         return nano.db.createAsync(dbName);
     });
-}));
-
-console.log('Starting deployment');
-bluebird.all(designDocuments.map(d => {
-    let deployCmd = `node ./couchmigrate/app.js --dd ${d.file} --db ${d.db}`;
-    if (url) {
-        deployCmd += ` --url ${url}`;
-    }
-    console.log(deployCmd);
-    childProcess.execAsync(deployCmd, (error, stdout, stderr) => {
-        console.log(stdout);
-        console.log(stderr);
-    });
-}));
+})).then(() => {
+    console.log('Starting deployment');
+    bluebird.all(designDocuments.map(d => {
+        let deployCmd = `node ./couchmigrate/app.js --dd ${d.file} --db ${d.db}`;
+        if (url) {
+            deployCmd += ` --url ${url}`;
+        }
+        console.log(deployCmd);
+        childProcess.execAsync(deployCmd, (error, stdout, stderr) => {
+            console.log(stdout);
+            console.log(stderr);
+        });
+    }));
+});
