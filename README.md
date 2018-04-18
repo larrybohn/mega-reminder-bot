@@ -5,7 +5,7 @@
 4. Run ```npm install```
 5. Run ```npm run deploy-database http://localhost:5984``` to deploy database schema to your local CouchDB instance
 6. Obtain your own bot token from https://t.me/botfather
-7. Set BOT_TOKEN environment variable to the token obtained at step 5
+7. Set BOT_TOKEN environment variable to the token obtained at step 6
 8. Set COUCH_DB_CONNECTION_STRING environment variable to the connection string to your CouchDB instance or skip this to use ```http://localhost:5984``` by default
 9. Run the apps
     1. Run ```npm run debug-web``` to start the website at http://localhost:3200
