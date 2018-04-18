@@ -1,6 +1,9 @@
 .keyboard.container {
     max-width: 760px;
     margin-left: 0;
+    .error-message {
+        color: red;
+    }
     .keyboard-row {
         &.row {
             flex-wrap: nowrap;
@@ -39,14 +42,19 @@
                 select {
                     width: 70%;
                 }
+                .error {
+                    border: 1px solid red;
+                }
             }
 
             .keyboard-button-edit-action-container {
                 padding-top: 10px;
                 .btn {
+                    min-width: 80px;
                     margin-right: 5px;
                     padding-top: 3px;
-                    padding-bottom: 3px;                    
+                    padding-bottom: 3px;      
+                    margin-bottom: 1px;              
                 }
             }
         }

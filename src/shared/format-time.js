@@ -15,12 +15,16 @@ export function breakIntoUnits(timeInterval) {
     const minutes = Math.floor(timeInterval % 3600 / 60);
     const seconds = Math.floor(timeInterval % 60);
 
-    return [
+    let returnValue = [
         { value: days, unit: 'day' },
         { value: hours, unit: 'hour' },
         { value: minutes, unit: 'minute' },
         { value: seconds, unit: 'second' }
     ].filter(t => t.value !== 0);
+    if (!returnValue.length) {
+        returnValue.push({ value: 0, unit: 'second'});
+    }
+    return returnValue;
 }
 
 export function convertToLowestUnit(timeInterval) {

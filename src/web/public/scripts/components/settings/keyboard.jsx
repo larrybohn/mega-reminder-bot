@@ -4,11 +4,12 @@ import KeyboardRow from './keyboard-row.jsx';
 import './keyboard.scss';
 import {v4 as uuidv4} from 'uuid';
 import Octicon from 'react-octicon';
+import * as TimeUtilities from '../../../../../shared/format-time';
 
 function mapButtonsToRows(buttonArray) {
     return buttonArray.map(row => ({
         id: uuidv4(),
-        items: row.map(item => ({id: uuidv4(), time: item, isEditing: false}))
+        items: row.map(item => ({id: uuidv4(), time: item, isEditing: false, isValid: true}))
     }));
 }
 
@@ -16,35 +17,66 @@ const createButton = () => ({
     id:uuidv4(),
     time: 0,
     isEditing:true,
-    editingTime: 60
+    isValid: true,
+    editingTime: 1,
+    editingUnit: 'minutes'
 });
+
+const cloneButtons = (buttons) => JSON.parse(JSON.stringify(buttons));
+
+const isButtonValid = (time) => Number(time) > 0;
 
 export class Keyboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isValid: true,
             buttonRows: mapButtonsToRows(props.buttons)
         };
     }
     componentWillReceiveProps(nextProps) {
+        this.setState({...this.state, buttonRows: mapButtonsToRows(nextProps.buttons)});
+    }
+
+    onTimeChange(e, rowIndex, colIndex) {
+        let newValue = e.target.value.replace(/\D/,'');
+        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+        newButtons[rowIndex].items[colIndex].editingTime = newValue;
+        if (!this.state.isValid || !this.props.isValid) {
+            newButtons[rowIndex].items[colIndex].isValid = isButtonValid(newValue);
+        }
+        this.setState({...this.state, buttonRows: newButtons});
+        return newValue;
+    }
+
+    onUnitChange(e, rowIndex, colIndex) {
+        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+        newButtons[rowIndex].items[colIndex].editingUnit = e.target.value;
+        this.setState({...this.state, buttonRows: newButtons});
+    }
+
+    addButton(rowIndex) {
+        let newButtons = cloneButtons(this.state.buttonRows);
+        newButtons[rowIndex].items.push(createButton());
+        this.setState({...this.state, buttonRows: newButtons});
+    }
+
+    saveButton(rowIndex, colIndex) {
+        let newButtons = cloneButtons(this.state.buttonRows);
+        let button = newButtons[rowIndex].items[colIndex];
+        if (isButtonValid(button.editingTime)) {
+            newButtons[rowIndex].items[colIndex] = {...button, time: TimeUtilities.valueWithUnitToSeconds(button.editingTime, button.editingUnit), isEditing: false};
+        }else{
+            newButtons[rowIndex].items[colIndex].isValid = false;
+        }
         this.setState({
             ...this.state,
-            buttonRows: mapButtonsToRows(nextProps.buttons)
+            buttonRows: newButtons
         });
     }
 
-    deleteRow(index) {
-        this.setState({
-            ...this.state,
-            buttonRows: [
-                ...this.state.buttonRows.slice(0, index).map(a => JSON.parse(JSON.stringify(a))),
-                ...this.state.buttonRows.slice(index+1).map(a => JSON.parse(JSON.stringify(a)))
-            ]
-        })
-    }
-
-    deleteButton(rowIndex, colIndex) {
-        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+    deleteButton(e, rowIndex, colIndex) {
+        let newButtons = cloneButtons(this.state.buttonRows);
         newButtons[rowIndex].items.splice(colIndex, 1);
         if (newButtons[rowIndex].items.length) {        
             this.setState({
@@ -54,80 +86,74 @@ export class Keyboard extends Component {
         }else{
             this.deleteRow(rowIndex);
         }
-    }
-
-    updateButton(rowIndex, colIndex, newValue) {
-        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons[rowIndex].items[colIndex].time = newValue;
-        newButtons[rowIndex].items[colIndex].isEditing = false;
-        this.setState({
-            ...this.state,
-            buttonRows: newButtons
-        });
-    }
-
-    addButton(rowIndex) {
-        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons[rowIndex].items.push(createButton());
-        this.setState({
-            ...this.state,
-            buttonRows: newButtons
-        });
+        e.preventDefault();
     }
 
     addRow() {
-        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
+        let newButtons = cloneButtons(this.state.buttonRows);
         newButtons.push({id: uuidv4(), items:[createButton()]});
+        this.setState({...this.state, buttonRows: newButtons});
+    }
+
+    deleteRow(index) {
         this.setState({
             ...this.state,
-            buttonRows: newButtons
-        });
+            buttonRows: cloneButtons([
+                ...this.state.buttonRows.slice(0, index),
+                ...this.state.buttonRows.slice(index+1)
+            ])
+        })
     }
 
-    reset() {
-        this.setState({
-            buttonRows: mapButtonsToRows(this.props.buttons)
-        });
+    resetForm() {
+        this.setState({buttonRows: mapButtonsToRows(this.props.buttons), isValid: true});
     }
 
-    onSaveClick() {
-        let nextButtons = this.state.buttonRows.map(row => ({
-            ...row,
-            items: row.items.map(item =>{
-                let nextItem = {...item};
+    saveForm() {
+        let isValid = true;
+
+        let nextButtons = cloneButtons(this.state.buttonRows);
+        nextButtons.forEach(row => row.items.forEach(item => {
+            if (item.isEditing) {
+                item.isValid = isButtonValid(item.editingTime);
+                isValid = isValid && item.isValid;
+            }
+         }));
+
+         if (isValid) {
+            nextButtons.forEach(row => row.items.forEach(item => {
                 if (item.isEditing) {
-                    nextItem.time = item.editingTime;
-                    nextItem.isEditing = false;
+                    item.time = TimeUtilities.valueWithUnitToSeconds(item.editingTime, item.editingUnit);
+                    item.isEditing = false;
                 }
-                return nextItem;
-            })
-        }));
+             }));
+         }
+
         this.setState({
             ...this.state,
+            isValid: isValid,
             buttonRows: nextButtons
-        }, () => this.props.save(nextButtons.map(row => row.items.map(item => item.time))));
+        }, () => isValid && this.props.save(nextButtons.map(row => row.items.map(item => item.time))));
     }
 
-    onButtonEditModeToggle(isEditing, rowIndex, colIndex) {
+    onButtonEditModeToggle(e, isEditing, rowIndex, colIndex) {
+        e.preventDefault();
         if (!isEditing && this.state.buttonRows[rowIndex].items[colIndex].time === 0) { //cancellng newly added item
-            this.deleteButton(rowIndex, colIndex);
+            this.deleteButton(e, rowIndex, colIndex);
         }else{
             let nextButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
             nextButtons[rowIndex].items[colIndex].isEditing = isEditing;
             if (isEditing) {
-                nextButtons[rowIndex].items[colIndex].editingTime = nextButtons[rowIndex].items[colIndex].time;
+                const time = TimeUtilities.convertToLowestUnit(nextButtons[rowIndex].items[colIndex].time);
+                nextButtons[rowIndex].items[colIndex].editingTime = time.value;
+                nextButtons[rowIndex].items[colIndex].editingUnit = time.unit;
+                nextButtons[rowIndex].items[colIndex].isValid = true;
             }
             this.setState({
                 ...this.state,
                 buttonRows: nextButtons
             });
         }
-    }
-
-    onTimeChange(newValue, rowIndex, colIndex) {
-        let newButtons = JSON.parse(JSON.stringify(this.state.buttonRows));
-        newButtons[rowIndex].items[colIndex].editingTime = newValue;
-        this.setState({...this.state, buttonRows: newButtons});
     }
 
     render() {
@@ -144,16 +170,21 @@ export class Keyboard extends Component {
                             time={itemObject.time}
                             isEditing={itemObject.isEditing}
                             editingTime={itemObject.editingTime}
-                            onTimeChange={(newValue) => this.onTimeChange(newValue, rowIndex, index)}
-                            onEditModeToggle={(isEditing) => this.onButtonEditModeToggle(isEditing,rowIndex,index)}
-                            delete={() => this.deleteButton(rowIndex, index)}
-                            update={(newValue) => this.updateButton(rowIndex, index, newValue)} />)
+                            editingUnit={itemObject.editingUnit}
+                            isValid={itemObject.isValid}
+                            onTimeChange={(e) => this.onTimeChange(e, rowIndex, index)}
+                            onUnitChange={(e) => this.onUnitChange(e, rowIndex, index)}
+                            onEditModeToggle={(e, isEditing) => this.onButtonEditModeToggle(e, isEditing, rowIndex, index)}
+                            onDelete={(e) => this.deleteButton(e, rowIndex, index)}
+                            onSave={() => this.saveButton(rowIndex, index)} />)
                 }
             </KeyboardRow>
         );
         return (
             <div className="keyboard container">
+                <div className={this.state.isValid ? '' : 'error'}>
                 {rows}
+                </div>
                 <div className="row">
                     <div className="col add-row-container">
                         <button type="button" className="btn btn-link" onClick={() => this.addRow()}><Octicon name="plus" />Row</button>
@@ -161,10 +192,11 @@ export class Keyboard extends Component {
                 </div>
                 <div className="row">
                     <div className="col actions-container">
-                        <button type="button" className="btn btn-primary btn-save-keyboard" onClick={() => this.onSaveClick()}>
+                        {!this.state.isValid && <p className="error-message"><Octicon name="alert"/> Please correct the errors.</p>}
+                        <button type="button" className="btn btn-primary btn-save-keyboard" onClick={() => this.saveForm()}>
                             Save
                         </button>
-                        <button type="button" className="btn btn-secondary btn-reset-keyboard" onClick={() => this.reset()}>
+                        <button type="button" className="btn btn-secondary btn-reset-keyboard" onClick={() => this.resetForm()}>
                             Reset
                         </button>
                     </div>

@@ -45,7 +45,7 @@ export class UserAuth extends Component {
                 <Modal isOpen={true}>
                     <ModalHeader>Signing in...</ModalHeader>
                     <ModalBody>
-                        To authenticatte, open <a href={telegramLink} target="_blank">Telegram Link</a> and click Start in the Telegram chat, or send
+                        To authenticate, open <a href={telegramLink} target="_blank">Telegram Link</a> and click Start in the Telegram chat, or send
                         the following message to the bot: <pre>/start {token}</pre>
                     </ModalBody>
                     <ModalFooter>
