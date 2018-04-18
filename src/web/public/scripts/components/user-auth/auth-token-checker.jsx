@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-const intervalMilliseconds = 2000;
+const intervalMilliseconds = 3500;
 
 export class AuthTokenChecker extends Component {
     constructor(props) {
